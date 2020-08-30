@@ -29,7 +29,7 @@ void GSMenu::Init()
 	//play button
 	texture = ResourceManagers::GetInstance()->GetTexture("btn_play");
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 200);
+	button->Set2DPosition(screenWidth / 2, 100);
 	button->SetSize(200, 50);
 	button->SetOnClick([]() {
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Play);
@@ -39,7 +39,7 @@ void GSMenu::Init()
 	//play option
 	texture = ResourceManagers::GetInstance()->GetTexture("btn_option");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 300);
+	button->Set2DPosition(screenWidth / 2, 200);
 	button->SetSize(200, 50);
 	button->SetOnClick([]() {
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Option);
@@ -49,7 +49,7 @@ void GSMenu::Init()
 	//play credit
 	texture = ResourceManagers::GetInstance()->GetTexture("btn_credit");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 400);
+	button->Set2DPosition(screenWidth / 2, 300);
 	button->SetSize(200, 50);
 	button->SetOnClick([]() {
 		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Credit);
@@ -59,7 +59,7 @@ void GSMenu::Init()
 	//exit button
 	texture = ResourceManagers::GetInstance()->GetTexture("btn_quit");
 	button = std::make_shared<GameButton>(model, shader, texture);
-	button->Set2DPosition(screenWidth / 2, 500);
+	button->Set2DPosition(screenWidth / 2, 400);
 	button->SetSize(200, 50);
 	button->SetOnClick([]() {
 		exit(0);
@@ -71,7 +71,7 @@ void GSMenu::Init()
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
 	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("arialbd");
 	m_Text_gameName = std::make_shared< Text>(shader, font, "Phoenix", TEXT_COLOR::ORANGE, 1.0);
-	m_Text_gameName->Set2DPosition(Vector2(screenWidth / 2 - 40, 120));
+	m_Text_gameName->Set2DPosition(Vector2(screenWidth / 2 - 40, 50));
 }
 
 void GSMenu::Exit()
