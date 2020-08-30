@@ -27,10 +27,11 @@ std::shared_ptr<GameStateBase> GameStateBase::CreateState(StateTypes stt)
 		gs = std::make_shared<GSPlay>();
 		break;
 	case STATE_Option:
+		gs = std::make_shared<GSPlay>();
 		//todo
 		break;
 	case STATE_Credit:
-		//todo
+		gs = std::make_shared<GSCredit>();
 		break;
 	default:
 		break;

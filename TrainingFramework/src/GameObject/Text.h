@@ -9,6 +9,8 @@ enum class TEXT_COLOR {
 	YELLOW,
 	PURPLE,
 	CYAN,
+	ORANGE,
+	WHITE,
 	BLACK
 };
 

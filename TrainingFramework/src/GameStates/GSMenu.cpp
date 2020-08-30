@@ -27,7 +27,7 @@ void GSMenu::Init()
 	m_BackGround->SetSize(screenWidth, screenHeight);
 
 	//play button
-	texture = ResourceManagers::GetInstance()->GetTexture("button_play");
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_play");
 	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 200);
 	button->SetSize(200, 50);
@@ -36,10 +36,30 @@ void GSMenu::Init()
 		});
 	m_listButton.push_back(button);
 
-	//exit button
-	texture = ResourceManagers::GetInstance()->GetTexture("button_quit");
+	//play option
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_option");
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 300);
+	button->SetSize(200, 50);
+	button->SetOnClick([]() {
+		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Option);
+		});
+	m_listButton.push_back(button);
+
+	//play credit
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_credit");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, 400);
+	button->SetSize(200, 50);
+	button->SetOnClick([]() {
+		GameStateMachine::GetInstance()->ChangeState(StateTypes::STATE_Credit);
+		});
+	m_listButton.push_back(button);
+
+	//exit button
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_quit");
+	button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, 500);
 	button->SetSize(200, 50);
 	button->SetOnClick([]() {
 		exit(0);
@@ -50,7 +70,7 @@ void GSMenu::Init()
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
 	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("arialbd");
-	m_Text_gameName = std::make_shared< Text>(shader, font, "Phoenix", TEXT_COLOR::GREEN, 1.0);
+	m_Text_gameName = std::make_shared< Text>(shader, font, "Phoenix", TEXT_COLOR::ORANGE, 1.0);
 	m_Text_gameName->Set2DPosition(Vector2(screenWidth / 2 - 40, 120));
 }
 
