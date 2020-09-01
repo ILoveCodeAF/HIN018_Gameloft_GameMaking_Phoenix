@@ -37,7 +37,7 @@ void GSMenu::Init()
 	m_listButton.push_back(button);
 
 	//play option
-	texture = ResourceManagers::GetInstance()->GetTexture("btn_option");
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_options");
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 200);
 	button->SetSize(200, 50);
@@ -47,7 +47,7 @@ void GSMenu::Init()
 	m_listButton.push_back(button);
 
 	//play credit
-	texture = ResourceManagers::GetInstance()->GetTexture("btn_credit");
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_credits");
 	button = std::make_shared<GameButton>(model, shader, texture);
 	button->Set2DPosition(screenWidth / 2, 300);
 	button->SetSize(200, 50);
