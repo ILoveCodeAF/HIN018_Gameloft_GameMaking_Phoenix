@@ -40,6 +40,14 @@ void GSOption::Init()
 		GameStateMachine::GetInstance()->PopState();
 		});
 	m_listButton.push_back(button);
+
+	//text game title
+	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
+	std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("arialbd");
+
+	char* info = "Options";
+	m_option = std::make_shared< Text>(shader, font, info, TEXT_COLOR::WHITE, 1.0);
+	m_option->Set2DPosition(Vector2(100, 100));
 }
 
 void GSOption::Exit()
@@ -76,4 +84,5 @@ void GSOption::Draw()
 	{
 		it->Draw();
 	}
+	m_option->Draw();
 }

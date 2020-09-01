@@ -23,6 +23,7 @@ public:
 
 private:
 	std::shared_ptr<Sprite2D> m_BackGround;
+	std::shared_ptr<Text> m_option;
 	std::list<std::shared_ptr<GameButton>>	m_listButton;
 
 };
