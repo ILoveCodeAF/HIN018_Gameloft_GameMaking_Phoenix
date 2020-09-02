@@ -34,6 +34,14 @@ void GSPlay::Init()
 	m_BackGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
 	m_BackGround->SetSize(screenWidth, screenHeight);
 
+	//Tohsaka Rin
+	shader = ResourceManagers::GetInstance()->GetShader("AnimationShader");
+	texture = ResourceManagers::GetInstance()->GetTexture("tohsaka_rin1");
+	auto tohsaka_rin = std::make_shared<AnimationSprite>(model, shader, texture, 10, 0.1f);
+	tohsaka_rin->Set2DPosition(Vector2(500, 300));
+	tohsaka_rin->SetSize(91, 110);
+	m_listAnimation.push_back(tohsaka_rin);
+
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -75,11 +83,19 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	for (auto obj : m_listAnimation)
+	{
+		obj->Update(deltaTime);
+	}
 }
 
 void GSPlay::Draw()
 {
 	m_BackGround->Draw();
+	for (auto obj : m_listAnimation)
+	{
+		obj->Draw();
+	}
 	m_score->Draw();
 }
 
