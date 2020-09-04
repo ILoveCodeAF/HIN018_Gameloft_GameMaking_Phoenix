@@ -1,6 +1,7 @@
 #pragma once
 #include "gamestatebase.h"
 #include "AnimationSprite.h"
+#include "DifferentlyAnimationSprite.h"
 
 class Sprite2D;
 class Sprite3D;
@@ -34,7 +35,7 @@ private:
 
 	std::shared_ptr<Sprite2D> m_BackGround;
 	std::shared_ptr<Text>  m_score;
-	std::vector<std::shared_ptr<AnimationSprite>> m_listAnimation;
+	std::vector<std::shared_ptr<DifferentlyAnimationSprite>> m_listAnimation;
 
 };
 

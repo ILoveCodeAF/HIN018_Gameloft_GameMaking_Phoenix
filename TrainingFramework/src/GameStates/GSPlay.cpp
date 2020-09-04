@@ -35,11 +35,12 @@ void GSPlay::Init()
 	m_BackGround->SetSize(screenWidth, screenHeight);
 
 	//Tohsaka Rin
-	shader = ResourceManagers::GetInstance()->GetShader("AnimationShader");
-	texture = ResourceManagers::GetInstance()->GetTexture("tohsaka_rin1");
-	auto tohsaka_rin = std::make_shared<AnimationSprite>(model, shader, texture, 10, 0.1f);
+	shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
+	texture = ResourceManagers::GetInstance()->GetTexture("sprite_sheet_tohsaka_rin");
+	auto tohsaka_rin = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture, 10, 0.1f);
+	tohsaka_rin->loadAnimation("tohsaka_rin");
 	tohsaka_rin->Set2DPosition(Vector2(500, 300));
-	tohsaka_rin->SetSize(91, 110);
+	//tohsaka_rin->SetSize(75, 112);
 	m_listAnimation.push_back(tohsaka_rin);
 
 
