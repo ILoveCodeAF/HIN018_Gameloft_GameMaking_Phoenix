@@ -37,7 +37,7 @@ void GSPlay::Init()
 	//Tohsaka Rin
 	shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("sprite_sheet_tohsaka_rin");
-	auto tohsaka_rin = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture, 10, 0.1f);
+	auto tohsaka_rin = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
 	tohsaka_rin->loadAnimation("tohsaka_rin");
 	tohsaka_rin->Set2DPosition(Vector2(500, 300));
 	//tohsaka_rin->SetSize(75, 112);
@@ -75,6 +75,42 @@ void GSPlay::HandleEvents()
 
 void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 {
+	std::cout << char(key) << std::endl;
+	if (bIsPressed)
+	{
+		switch (key)
+		{
+		case 'A':
+			m_listAnimation[0]->Left(true);
+			m_listAnimation[0]->SetAnimation("run");
+			break;
+		case 'D':
+			m_listAnimation[0]->Left(false);
+			m_listAnimation[0]->SetAnimation("run");
+			break;
+		case 'K':
+			m_listAnimation[0]->SetAnimation("kick");
+			break;
+		default:
+			break;
+		}
+	}
+	else
+	{
+		switch (key)
+		{
+		case 'A':
+			m_listAnimation[0]->SetAnimation("idle");
+			break;
+		case 'D':
+			m_listAnimation[0]->SetAnimation("idle");
+			break;
+		case 'K':
+			break;
+		default:
+			break;
+		}
+	}
 	
 }
 

@@ -9,16 +9,23 @@
 
 namespace fs = std::filesystem;
 
+extern GLint screenWidth;
+extern GLint screenHeight;
+
 DifferentlyAnimationSprite::DifferentlyAnimationSprite()
 {}
 
-DifferentlyAnimationSprite::DifferentlyAnimationSprite(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture, int numFrames, float frameTime) :
-	Sprite2D(model, shader, texture), m_numFrames(numFrames), m_frameTime(frameTime), m_currentTime(0.0f), m_currentFrame(0)
-{}
+DifferentlyAnimationSprite::DifferentlyAnimationSprite(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture) :
+	Sprite2D(model, shader, texture), m_numFrames(0), m_frameTime(0.0f), m_currentTime(0.0f), m_currentFrame(0), m_left(1)
+{
+	m_currentAnimation = nullptr;
+}
 
-DifferentlyAnimationSprite::DifferentlyAnimationSprite(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, Vector4 color, int numFrames, float frameTime) :
-	Sprite2D(model, shader, color), m_numFrames(numFrames), m_frameTime(frameTime), m_currentTime(0.0f), m_currentFrame(0)
-{}
+DifferentlyAnimationSprite::DifferentlyAnimationSprite(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, Vector4 color) :
+	Sprite2D(model, shader, color), m_numFrames(0), m_frameTime(0.0f), m_currentTime(0.0f), m_currentFrame(0), m_left(1)
+{
+	m_currentAnimation = nullptr;
+}
 
 DifferentlyAnimationSprite::~DifferentlyAnimationSprite()
 {
@@ -36,7 +43,8 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 	path = dataPath + path;
 
 	int width, height;
-	int x, y, w, h;
+	int x = 0, y = 0, w = 0, h = 0, dx = 0, dy = 0, loop = 0, velocity_x, velocity_y;
+	float frameTime = 0.0f;
 	std::ifstream infile;
 
 	for (const auto& entry : fs::directory_iterator(path))
@@ -44,13 +52,19 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 		std::cout << entry.path() << std::endl;
 		infile.open(entry.path());
 
-		infile >> width >> height;
+		infile >> width >> height >> frameTime >> loop >> velocity_x >> velocity_y;
 
 		Animation animation;
-		animation.m_frameTime = 0.1f;
+		animation.m_name = entry.path().filename().u8string();
+		animation.m_frameTime = frameTime;
+		animation.m_loop = loop;
+		animation.m_velocity_x = velocity_x;
+		animation.m_velocity_y = velocity_y;
 
-		while (infile >> x >> y >> w >> h)
+		while (infile >> x >> y >> w >> h >> dx >> dy)
 		{
+			dx = (dx == 0) ? 0 : (x - dx)/3;
+			dy = (dy == 0) ? 0 : (y - dy)/3;
 			std::cout << x << " - " << y << " - " << w << " - " << h << std::endl;
 			animation.m_width.push_back(w);
 			animation.m_height.push_back(h);
@@ -58,17 +72,30 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 			animation.m_vertices_x1.push_back(float(x + w) / width);
 			animation.m_vertices_y0.push_back(float(height-h-y) / height);
 			animation.m_vertices_y1.push_back(float(height-y) / height);
+			animation.m_delta_x.push_back(dx);
+			animation.m_delta_y.push_back(dy);
 		}
-		m_mapAnimation.insert(std::make_pair(entry.path().filename().u8string(), animation));
+		m_mapAnimation.insert(std::make_pair(animation.m_name, animation));
 
 		infile.close();
 	}
-	m_currentAnimation = &m_mapAnimation["run"];
-	this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_width[m_currentFrame]);
+	this->SetAnimation("idle");
+	
 }
 
-void DifferentlyAnimationSprite::setAnimation(std::string animation_name)
-{}
+void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
+{	
+	if (m_currentAnimation == nullptr || m_currentAnimation->m_name != animation_name)
+	{
+		m_currentAnimation = &m_mapAnimation[animation_name];
+		this->m_currentFrame = 0;
+		this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
+		this->m_numFrames = m_currentAnimation->m_width.size();
+		this->m_frameTime = m_currentAnimation->m_frameTime;
+		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
+		this->Draw();
+	}	
+}
 
 void DifferentlyAnimationSprite::Draw()
 {
@@ -125,6 +152,11 @@ void DifferentlyAnimationSprite::Draw()
 		glUniformMatrix4fv(iTempShaderVaribleGLID, 1, GL_FALSE, matrixWVP.m[0]);
 
 	iTempShaderVaribleGLID = -1;
+	iTempShaderVaribleGLID = m_pShader->GetUniformLocation((char*)"u_left");
+	if (iTempShaderVaribleGLID != -1)
+		glUniform1i(iTempShaderVaribleGLID, m_left);
+
+	iTempShaderVaribleGLID = -1;
 	iTempShaderVaribleGLID = m_pShader->GetUniformLocation((char*)"u_numFrames");
 	if (iTempShaderVaribleGLID != -1)
 		glUniform1i(iTempShaderVaribleGLID, m_numFrames);
@@ -164,17 +196,65 @@ void DifferentlyAnimationSprite::Draw()
 void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 {
 	m_currentTime += deltatime;
-
+	
+	//todo
+	if(m_currentAnimation->m_name == "run")
+		this->ChangePosition(m_left*deltatime*50, 0);
 	if (m_currentTime > m_frameTime)
 	{
 		m_currentFrame++;
 		
 		if (m_currentFrame == m_numFrames)
 		{
-			m_currentFrame = 4;
+			if (m_currentAnimation->m_loop == -1)
+			{
+				this->SetAnimation("idle");
+				m_currentTime -= m_frameTime;
+				return;
+			}
+			else
+			{
+				m_currentFrame = m_currentAnimation->m_loop;
+			}
+			
 		}
+		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
 		this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
 
 		m_currentTime -= m_frameTime;
+	}
+}
+
+void DifferentlyAnimationSprite::ChangePosition(GLfloat delta_width, GLfloat delta_height)
+{
+	if (delta_width || delta_height)
+	{
+		m_Vec2DPos = m_Vec2DPos + Vector2(delta_width, delta_height);
+		float xx = (2.0 * (m_Vec2DPos.x + delta_width)) / screenWidth - 1.0;
+		float yy = 1.0 - (2.0 * (m_Vec2DPos.y + delta_height)) / screenHeight;
+		m_Vec3Position = Vector3(xx, yy, 1.0);
+
+		CaculateWorldMatrix();
+	}
+	
+}
+
+void DifferentlyAnimationSprite::CaculateWorldMatrix()
+{
+	Matrix m_Sc, m_T;
+	m_Sc.SetScale(m_Vec3Scale);
+	m_T.SetTranslation(m_Vec3Position);
+	m_WorldMat = m_Sc * m_T;
+}
+
+void  DifferentlyAnimationSprite::Left(bool is_left)
+{
+	if (is_left) 
+	{
+		m_left = -1;
+	}
+	else
+	{
+		m_left = 1;
 	}
 }

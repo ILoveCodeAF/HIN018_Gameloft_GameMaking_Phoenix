@@ -7,6 +7,7 @@ uniform 	mat4 	u_matMVP;
 uniform 	mat4 	u_matWorld;
 uniform 	float 	u_alpha;
 
+uniform 	int 	u_left;
 uniform		int	u_numFrames;
 uniform		int	u_currentFrame;
 uniform		float	u_vertices_x0[MAX_NUM_VERTICES];
@@ -20,22 +21,46 @@ void main()
 {
 	vec4 posL = vec4(a_posL, 1.0);
 	gl_Position = u_matMVP * posL;
-	if (int(a_uv.x) == 0 && int(a_uv.y) == 0) 
+	
+	if (u_left == -1)
 	{
-		v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y0[u_currentFrame]);
-	}
-	if (int(a_uv.x) == 1 && int(a_uv.y) == 0) 
-	{
-		v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y0[u_currentFrame]);
-	}
-	if (int(a_uv.x) == 0 && int(a_uv.y) == 1) 
-	{
-		v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y1[u_currentFrame]);
-	}
-	if (int(a_uv.x) == 1 && int(a_uv.y) == 1) 
-	{
-		v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y1[u_currentFrame]);
-	}
+		if (int(a_uv.x) == 0 && int(a_uv.y) == 0) 
+		{
+			v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y0[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 1 && int(a_uv.y) == 0) 
+		{
+			v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y0[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 0 && int(a_uv.y) == 1) 
+		{
+			v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y1[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 1 && int(a_uv.y) == 1) 
+		{
+			v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y1[u_currentFrame]);
+		}
 
+
+	}
+	else
+	{
+		if (int(a_uv.x) == 0 && int(a_uv.y) == 0) 
+		{
+			v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y0[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 1 && int(a_uv.y) == 0) 
+		{
+			v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y0[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 0 && int(a_uv.y) == 1) 
+		{
+			v_uv = vec2(u_vertices_x0[u_currentFrame], u_vertices_y1[u_currentFrame]);
+		}
+		if (int(a_uv.x) == 1 && int(a_uv.y) == 1) 
+		{
+			v_uv = vec2(u_vertices_x1[u_currentFrame], u_vertices_y1[u_currentFrame]);
+		}
+	}
 }
    
