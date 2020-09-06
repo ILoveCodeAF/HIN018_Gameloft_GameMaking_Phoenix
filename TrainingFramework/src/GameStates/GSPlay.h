@@ -2,6 +2,7 @@
 #include "gamestatebase.h"
 #include "AnimationSprite.h"
 #include "DifferentlyAnimationSprite.h"
+#include "ScrollAnimationSprite.h"
 
 class Sprite2D;
 class Sprite3D;
@@ -33,7 +34,7 @@ public:
 
 private:
 
-	std::shared_ptr<Sprite2D> m_BackGround;
+	std::vector <std::shared_ptr<Sprite2D>> m_listBackGround;
 	std::shared_ptr<Text>  m_score;
 	std::vector<std::shared_ptr<DifferentlyAnimationSprite>> m_listAnimation;
 

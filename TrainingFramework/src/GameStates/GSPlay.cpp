@@ -30,9 +30,18 @@ void GSPlay::Init()
 
 	//BackGround
 	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
-	m_BackGround = std::make_shared<Sprite2D>(model, shader, texture);
-	m_BackGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
-	m_BackGround->SetSize(screenWidth, screenHeight);
+	auto backGround = std::make_shared<Sprite2D>(model, shader, texture);
+	backGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	backGround->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(backGround);
+
+	//foregound
+	shader = ResourceManagers::GetInstance()->GetShader("ScrollAnimationShader");
+	texture = ResourceManagers::GetInstance()->GetTexture("cloud");
+	auto cloud = std::make_shared<ScrollAnimationSprite>(model, shader, texture, 2000, 496, 50);
+	cloud->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	cloud->SetSize(screenWidth, screenHeight);
+	m_listBackGround.push_back(cloud);
 
 	//Tohsaka Rin
 	shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
@@ -120,6 +129,11 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	for (auto bg : m_listBackGround)
+	{
+		bg->Update(deltaTime);
+	}
+
 	for (auto obj : m_listAnimation)
 	{
 		obj->Update(deltaTime);
@@ -128,7 +142,11 @@ void GSPlay::Update(float deltaTime)
 
 void GSPlay::Draw()
 {
-	m_BackGround->Draw();
+	for (auto obj : m_listBackGround)
+	{
+		obj->Draw();
+	}
+
 	for (auto obj : m_listAnimation)
 	{
 		obj->Draw();
