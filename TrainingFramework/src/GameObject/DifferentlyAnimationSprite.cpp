@@ -199,7 +199,7 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 	
 	//todo
 	if(m_currentAnimation->m_name == "run")
-		this->ChangePosition(m_left*deltatime*50, 0);
+		this->ChangePosition(m_left*deltatime*m_currentAnimation->m_velocity_x, 0);
 	if (m_currentTime > m_frameTime)
 	{
 		m_currentFrame++;

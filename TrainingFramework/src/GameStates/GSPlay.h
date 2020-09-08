@@ -3,6 +3,8 @@
 #include "AnimationSprite.h"
 #include "DifferentlyAnimationSprite.h"
 #include "ScrollAnimationSprite.h"
+#include "Character.h"
+#include "StageMap.h"
 
 class Sprite2D;
 class Sprite3D;
@@ -34,8 +36,10 @@ public:
 
 private:
 
-	std::vector <std::shared_ptr<Sprite2D>> m_listBackGround;
+	//std::vector <std::shared_ptr<Sprite2D>> m_listBackGround;
+	std::shared_ptr<StageMap> m_map;
 	std::shared_ptr<Text>  m_score;
+	std::shared_ptr<Character> m_mainCharacter;
 	std::vector<std::shared_ptr<DifferentlyAnimationSprite>> m_listAnimation;
 
 };

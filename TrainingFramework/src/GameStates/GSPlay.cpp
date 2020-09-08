@@ -26,31 +26,38 @@ GSPlay::~GSPlay()
 void GSPlay::Init()
 {
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
-	auto texture = ResourceManagers::GetInstance()->GetTexture("bg_play");
+	//auto texture = ResourceManagers::GetInstance()->GetTexture("bg_play");
 
-	//BackGround
-	auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
-	auto backGround = std::make_shared<Sprite2D>(model, shader, texture);
-	backGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
-	backGround->SetSize(screenWidth, screenHeight);
-	m_listBackGround.push_back(backGround);
+	////BackGround
+	//auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+	//auto backGround = std::make_shared<Sprite2D>(model, shader, texture);
+	//backGround->Set2DPosition(screenWidth / 2, screenHeight / 2);
+	//backGround->SetSize(screenWidth, screenHeight);
+	//m_listBackGround.push_back(backGround);
+
+	m_map = std::make_shared<StageMap>(screenWidth, screenHeight);
+	m_map->Generate();
 
 	//foregound
-	shader = ResourceManagers::GetInstance()->GetShader("ScrollAnimationShader");
+	/*shader = ResourceManagers::GetInstance()->GetShader("ScrollAnimationShader");
 	texture = ResourceManagers::GetInstance()->GetTexture("cloud");
 	auto cloud = std::make_shared<ScrollAnimationSprite>(model, shader, texture, 2000, 496, 50);
 	cloud->Set2DPosition(screenWidth / 2, screenHeight / 2);
 	cloud->SetSize(screenWidth, screenHeight);
-	m_listBackGround.push_back(cloud);
+	m_listBackGround.push_back(cloud);*/
 
 	//Tohsaka Rin
-	shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
-	texture = ResourceManagers::GetInstance()->GetTexture("sprite_sheet_tohsaka_rin");
-	auto tohsaka_rin = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
-	tohsaka_rin->loadAnimation("tohsaka_rin");
-	tohsaka_rin->Set2DPosition(Vector2(500, 300));
+	auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
+	auto texture = ResourceManagers::GetInstance()->GetTexture("sprite_sheet_tohsaka_rin");
+	//auto tohsaka_rin = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
+	//tohsaka_rin->loadAnimation("tohsaka_rin");
+	//tohsaka_rin->Set2DPosition(Vector2(500, 300));
+	////tohsaka_rin->SetSize(75, 112);
+	//m_listAnimation.push_back(tohsaka_rin);
+	m_mainCharacter = std::make_shared<Character>(model, shader, texture, 3000, 10);
+	m_mainCharacter->loadAnimation("tohsaka_rin");
+	m_mainCharacter->Set2DPosition(Vector2(500, 300));
 	//tohsaka_rin->SetSize(75, 112);
-	m_listAnimation.push_back(tohsaka_rin);
 
 
 	//text game title
@@ -84,21 +91,27 @@ void GSPlay::HandleEvents()
 
 void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 {
-	std::cout << char(key) << std::endl;
+	std::cout << char(key);
 	if (bIsPressed)
 	{
 		switch (key)
 		{
 		case 'A':
-			m_listAnimation[0]->Left(true);
-			m_listAnimation[0]->SetAnimation("run");
+			m_mainCharacter->Left(true);
+			m_mainCharacter->SetAnimation("run");
 			break;
 		case 'D':
-			m_listAnimation[0]->Left(false);
-			m_listAnimation[0]->SetAnimation("run");
+			m_mainCharacter->Left(false);
+			m_mainCharacter->SetAnimation("run");
+			break;
+		case 'W':
+			m_mainCharacter->SetAnimation("jump");
 			break;
 		case 'K':
-			m_listAnimation[0]->SetAnimation("kick");
+			m_mainCharacter->SetAnimation("kick");
+			break;
+		case 'J':
+			m_mainCharacter->SetAnimation("punch");
 			break;
 		default:
 			break;
@@ -109,12 +122,14 @@ void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 		switch (key)
 		{
 		case 'A':
-			m_listAnimation[0]->SetAnimation("idle");
+			m_mainCharacter->SetAnimation("idle");
 			break;
 		case 'D':
-			m_listAnimation[0]->SetAnimation("idle");
+			m_mainCharacter->SetAnimation("idle");
 			break;
 		case 'K':
+			break;
+		case 'J':
 			break;
 		default:
 			break;
@@ -129,29 +144,34 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
-	for (auto bg : m_listBackGround)
+	/*for (auto bg : m_listBackGround)
 	{
 		bg->Update(deltaTime);
-	}
+	}*/
+	m_map->Update(deltaTime);
 
-	for (auto obj : m_listAnimation)
+	/*for (auto obj : m_listAnimation)
 	{
 		obj->Update(deltaTime);
-	}
+	}*/
+	m_mainCharacter->Update(deltaTime);
 }
 
 void GSPlay::Draw()
 {
-	for (auto obj : m_listBackGround)
+	/*for (auto obj : m_listBackGround)
 	{
 		obj->Draw();
-	}
+	}*/
 
-	for (auto obj : m_listAnimation)
+	m_map->Draw();
+
+	/*for (auto obj : m_listAnimation)
 	{
 		obj->Draw();
-	}
+	}*/
 	m_score->Draw();
+	m_mainCharacter->Draw();
 }
 
 void GSPlay::SetNewPostionForBullet()
