@@ -39,9 +39,12 @@ public:
 	void		SetAnimation(std::string animation_name);
 	void		Draw() override;
 	void		Update(GLfloat deltatime) override;
+	void		Update(GLfloat deltatime, int &x, int &y);
 	void		Left(bool is_left);
 
 protected:
+	int m_x;
+	int m_y;
 	int m_left;
 	int m_numFrames;
 	int m_currentFrame;
@@ -51,7 +54,7 @@ protected:
 	
 	std::unordered_map<std::string, Animation>  m_mapAnimation;
 
-private:
-	void ChangePosition(GLfloat dw, GLfloat dh);
-	void CaculateWorldMatrix();
+//private:
+	//void ChangePosition(GLfloat dw, GLfloat dh);
+	//void CaculateWorldMatrix();
 };

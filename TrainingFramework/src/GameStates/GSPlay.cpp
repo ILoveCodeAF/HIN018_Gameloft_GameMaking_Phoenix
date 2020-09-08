@@ -56,7 +56,7 @@ void GSPlay::Init()
 	//m_listAnimation.push_back(tohsaka_rin);
 	m_mainCharacter = std::make_shared<Character>(model, shader, texture, 3000, 10);
 	m_mainCharacter->loadAnimation("tohsaka_rin");
-	m_mainCharacter->Set2DPosition(Vector2(500, 300));
+	//m_mainCharacter->Set2DPosition(Vector2(500, 300));
 	//tohsaka_rin->SetSize(75, 112);
 
 

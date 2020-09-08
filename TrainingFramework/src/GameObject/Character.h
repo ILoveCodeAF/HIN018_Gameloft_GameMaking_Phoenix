@@ -18,13 +18,13 @@ public:
 	void		Left(bool is_left);
 	void		Set2DPosition(int x, int y);
 	void		Set2DPosition(Vector2&);
+
 private:
-	DifferentlyAnimationSprite m_animations;
+	std::shared_ptr<DifferentlyAnimationSprite> m_animations;
 	int m_x;
 	int m_y;
 	int m_maxHP;
 	int m_currentHP;
 	int m_attackDamage;
-
 
 };

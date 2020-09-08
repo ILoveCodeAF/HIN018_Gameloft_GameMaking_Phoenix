@@ -198,8 +198,7 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 	m_currentTime += deltatime;
 	
 	//todo
-	if(m_currentAnimation->m_name == "run")
-		this->ChangePosition(m_left*deltatime*m_currentAnimation->m_velocity_x, 0);
+
 	if (m_currentTime > m_frameTime)
 	{
 		m_currentFrame++;
@@ -225,7 +224,39 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 	}
 }
 
-void DifferentlyAnimationSprite::ChangePosition(GLfloat delta_width, GLfloat delta_height)
+void DifferentlyAnimationSprite::Update(GLfloat deltatime, int &x, int &y)
+{
+	m_currentTime += deltatime;
+
+	
+		
+	if (m_currentTime > m_frameTime)
+	{
+		m_currentFrame++;
+
+		if (m_currentFrame == m_numFrames)
+		{
+			if (m_currentAnimation->m_loop == -1)
+			{
+				this->SetAnimation("idle");
+				m_currentTime -= m_frameTime;
+				return;
+			}
+			else
+			{
+				m_currentFrame = m_currentAnimation->m_loop;
+			}
+
+		}
+		//todo
+		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
+		this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
+
+		m_currentTime -= m_frameTime;
+	}
+}
+
+/*void DifferentlyAnimationSprite::ChangePosition(GLfloat delta_width, GLfloat delta_height)
 {
 	if (delta_width || delta_height)
 	{
@@ -246,7 +277,7 @@ void DifferentlyAnimationSprite::CaculateWorldMatrix()
 	m_T.SetTranslation(m_Vec3Position);
 	m_WorldMat = m_Sc * m_T;
 }
-
+*/
 void  DifferentlyAnimationSprite::Left(bool is_left)
 {
 	if (is_left) 
