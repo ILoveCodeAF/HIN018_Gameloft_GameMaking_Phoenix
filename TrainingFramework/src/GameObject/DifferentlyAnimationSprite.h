@@ -9,6 +9,13 @@ class Sprite3D;
 class BaseObject;
 class Text;
 
+#define RUN		"run"
+#define IDLE	"idle"
+#define JUMP	"jump"
+#define PUNCH	"punch"
+#define KICK	"kick"
+#define FALL	"fall"
+
 struct Animation 
 {
 	std::string m_name;
@@ -41,6 +48,12 @@ public:
 	void		Update(GLfloat deltatime) override;
 	//void		Update(GLfloat deltatime, int &x, int &y);
 	void		Left(bool is_left);
+	void		ChangeAnimation(int key);
+	void		SetPosition(int x, int y);
+	int			GetPositionX();
+	int			GetPositionY();
+	int			GetDirection() { return m_left; }
+	int			GetHeight() { return m_currentAnimation->m_height[m_currentFrame]; }
 
 protected:
 	int m_x;
@@ -53,6 +66,7 @@ protected:
 	Animation* m_currentAnimation;
 	
 	std::unordered_map<std::string, Animation>  m_mapAnimation;
+	std::unordered_map<std::string, std::unordered_map<int, std::string>> m_stateGraph;
 
 //private:
 	//void ChangePosition(GLfloat dw, GLfloat dh);

@@ -8,6 +8,7 @@ Character::Character(std::shared_ptr<Models> model, std::shared_ptr<Shaders> sha
 	m_maxHP(maxHP), m_attackDamage(attackDamage), m_currentHP(maxHP)
 {
 	m_animations = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
+	m_hpSprite = std::make_shared<HPSprite>(maxHP);
 }
 
 Character::~Character()
@@ -30,6 +31,9 @@ void Character::SetAnimation(std::string animation_name)
 
 void Character::Draw()
 {
+	m_hpSprite->SetCurrentHP(m_currentHP/2);
+	m_hpSprite->Set2DPosition(m_animations->GetPositionX(), m_animations->GetPositionY() - m_animations->GetHeight() - 10);
+	m_hpSprite->Draw();
 	m_animations->Draw();
 }
 
@@ -45,10 +49,16 @@ void Character::Left(bool is_left)
 
 void Character::Set2DPosition(int x, int y)
 {
-	m_animations->Set2DPosition(x, y);
+	m_animations->SetPosition(x, y);
 }
 
 void Character::Set2DPosition(Vector2 &vec)
 {
 	m_animations->Set2DPosition(vec);
 }
+
+void Character::HandleKey(int key)
+{
+	m_animations->ChangeAnimation(key);
+}
+

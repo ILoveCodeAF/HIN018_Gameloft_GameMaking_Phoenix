@@ -37,10 +37,13 @@ public:
 private:
 
 	//std::vector <std::shared_ptr<Sprite2D>> m_listBackGround;
+	int m_key;
 	std::shared_ptr<StageMap> m_map;
 	std::shared_ptr<Text>  m_score;
+	float m_jumpDuration;
 	std::shared_ptr<Character> m_mainCharacter;
 	std::vector<std::shared_ptr<DifferentlyAnimationSprite>> m_listAnimation;
+	std::vector<std::shared_ptr<Character>> m_listCharacter;
 
 };
 

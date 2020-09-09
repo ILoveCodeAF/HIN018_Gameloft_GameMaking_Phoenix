@@ -41,15 +41,15 @@ void DifferentlyAnimationSprite::Init()
 
 void DifferentlyAnimationSprite::loadAnimation(std::string path)
 {
-	std::string dataPath = "..\\Data\\Vertices\\";
-	path = dataPath + path;
+	std::string dataPath = "..\\Data\\Objects\\";
+	std::string animationsPath = dataPath + path + "\\animations";
 
 	int width, height;
 	int x = 0, y = 0, w = 0, h = 0, dx = 0, dy = 0, loop = 0, velocity_x, velocity_y;
 	float frameTime = 0.0f;
 	std::ifstream infile;
 
-	for (const auto& entry : fs::directory_iterator(path))
+	for (const auto& entry : fs::directory_iterator(animationsPath))
 	{
 		std::cout << entry.path() << std::endl;
 		infile.open(entry.path());
@@ -81,14 +81,31 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 
 		infile.close();
 	}
-	this->SetAnimation("idle");
+	this->SetAnimation(IDLE);
 	//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
-	
+
+	std::unordered_map<int, std::string> temp;
+	std::string temp_state = "", state = "";
+	char key;
+	std::string nextState = "";
+	std::string statePath = dataPath + path + "\\state.txt";
+	infile.open(statePath);
+	while (infile >> state >> key >> nextState)
+	{
+		std::cout << key << '-';
+		if (state != temp_state)
+		{
+			temp_state = state;
+			m_stateGraph[state] = temp;
+		}
+		m_stateGraph[state][key] = nextState;
+	}
+	infile.close();
 }
 
 void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
 {	
-	if (m_currentAnimation == nullptr || m_currentAnimation->m_name != animation_name)
+	if (m_currentAnimation == nullptr || m_currentAnimation->m_name != animation_name || m_currentFrame == m_numFrames)
 	{
 		m_currentAnimation = &m_mapAnimation[animation_name];
 		this->m_currentFrame = 0;
@@ -98,7 +115,23 @@ void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
 		this->m_frameTime = m_currentAnimation->m_frameTime;
 		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
 		this->Draw();
-	}	
+	}
+}
+
+void DifferentlyAnimationSprite::SetPosition(int x, int y)
+{
+	m_x = x;
+	m_y = y;
+}
+
+int DifferentlyAnimationSprite::GetPositionX()
+{
+	return m_x;
+}
+
+int DifferentlyAnimationSprite::GetPositionY()
+{
+	return m_y;
 }
 
 void DifferentlyAnimationSprite::Draw()
@@ -211,7 +244,8 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 		{
 			if (m_currentAnimation->m_loop == -1)
 			{
-				this->SetAnimation("idle");
+				m_currentFrame = 0;
+				//this->SetAnimation(IDLE);
 				//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 				m_currentTime -= m_frameTime;
 				return;
@@ -294,4 +328,19 @@ void  DifferentlyAnimationSprite::Left(bool is_left)
 	{
 		m_left = 1;
 	}
+}
+
+void DifferentlyAnimationSprite::ChangeAnimation(int key)
+{
+	if (m_stateGraph.find(m_currentAnimation->m_name) != m_stateGraph.end())
+	{
+		if (m_stateGraph[m_currentAnimation->m_name].find(key) != m_stateGraph[m_currentAnimation->m_name].end())
+		{
+			if (m_stateGraph[m_currentAnimation->m_name][key] != "none")
+			{
+				this->SetAnimation(m_stateGraph[m_currentAnimation->m_name][key]);
+			}
+		}
+	}
+		
 }
