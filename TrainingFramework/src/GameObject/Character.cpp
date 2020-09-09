@@ -5,10 +5,9 @@ Character::Character()
 }
 
 Character::Character(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture, int maxHP, int attackDamage):
-	m_maxHP(maxHP), m_attackDamage(attackDamage), m_currentHP(maxHP), m_x(1000/2), m_y(496/3)
+	m_maxHP(maxHP), m_attackDamage(attackDamage), m_currentHP(maxHP)
 {
 	m_animations = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
-	m_animations->Set2DPosition(m_x, m_y);
 }
 
 Character::~Character()
@@ -36,7 +35,7 @@ void Character::Draw()
 
 void Character::Update(GLfloat deltaTime)
 {
-	m_animations->Update(deltaTime, m_x, m_y);
+	m_animations->Update(deltaTime);
 }
 
 void Character::Left(bool is_left)

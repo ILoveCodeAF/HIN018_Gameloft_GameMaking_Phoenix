@@ -18,6 +18,8 @@ DifferentlyAnimationSprite::DifferentlyAnimationSprite()
 DifferentlyAnimationSprite::DifferentlyAnimationSprite(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture) :
 	Sprite2D(model, shader, texture), m_numFrames(0), m_frameTime(0.0f), m_currentTime(0.0f), m_currentFrame(0), m_left(1)
 {
+	m_x = screenWidth / 2;
+	m_y = screenHeight * 7 / 8;
 	m_currentAnimation = nullptr;
 }
 
@@ -80,6 +82,7 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 		infile.close();
 	}
 	this->SetAnimation("idle");
+	//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 	
 }
 
@@ -89,6 +92,7 @@ void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
 	{
 		m_currentAnimation = &m_mapAnimation[animation_name];
 		this->m_currentFrame = 0;
+		this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 		this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
 		this->m_numFrames = m_currentAnimation->m_width.size();
 		this->m_frameTime = m_currentAnimation->m_frameTime;
@@ -208,6 +212,7 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 			if (m_currentAnimation->m_loop == -1)
 			{
 				this->SetAnimation("idle");
+				//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 				m_currentTime -= m_frameTime;
 				return;
 			}
@@ -219,11 +224,11 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 		}
 		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
 		this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
-
+		this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 		m_currentTime -= m_frameTime;
 	}
 }
-
+/*
 void DifferentlyAnimationSprite::Update(GLfloat deltatime, int &x, int &y)
 {
 	m_currentTime += deltatime;
@@ -255,6 +260,7 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime, int &x, int &y)
 		m_currentTime -= m_frameTime;
 	}
 }
+*/
 
 /*void DifferentlyAnimationSprite::ChangePosition(GLfloat delta_width, GLfloat delta_height)
 {

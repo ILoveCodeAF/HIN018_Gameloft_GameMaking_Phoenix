@@ -21,8 +21,6 @@ public:
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;
-	int m_x;
-	int m_y;
 	int m_maxHP;
 	int m_currentHP;
 	int m_attackDamage;

@@ -39,7 +39,7 @@ public:
 	void		SetAnimation(std::string animation_name);
 	void		Draw() override;
 	void		Update(GLfloat deltatime) override;
-	void		Update(GLfloat deltatime, int &x, int &y);
+	//void		Update(GLfloat deltatime, int &x, int &y);
 	void		Left(bool is_left);
 
 protected:
