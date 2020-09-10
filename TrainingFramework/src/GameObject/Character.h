@@ -22,8 +22,15 @@ public:
 	void		HandleKey(int key);
 	int			GetPositionX() { return m_animations->GetPositionX(); }
 	int			GetPositionY() { return m_animations->GetPositionY(); }
+	int			GetHeight() { return m_animations->GetHeight(); }
+	int			GetWidth() { return m_animations->GetWidth(); }
+	std::string	GetState() { return m_animations->GetState(); }
 
 	int			GetDirection() { return m_animations->GetDirection(); }
+	float		GetJumpDuration() { return m_jumpDuration; }
+	void		SetJumpDuration(float time) { m_jumpDuration = time; }
+	bool		IsKick() { return m_animations->GetCurrentFrame() == 0; }
+	void		GotAttacked(int dmg) { m_currentHP = m_currentHP > dmg ? m_currentHP - dmg : 0; }
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;
@@ -31,5 +38,6 @@ private:
 	int m_maxHP;
 	int m_currentHP;
 	int m_attackDamage;
+	float m_jumpDuration;
 
 };

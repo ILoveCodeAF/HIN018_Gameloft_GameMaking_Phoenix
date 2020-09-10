@@ -2,8 +2,8 @@
 #include "GameManager/ResourceManagers.h"
 
 
-HPSprite::HPSprite(int maxHP):
-	m_currentHP(maxHP), m_maxHP(maxHP)
+HPSprite::HPSprite(int maxHP) :
+	m_currentHP(maxHP), m_maxHP(maxHP), m_width(30), m_height(5)
 {
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("red");
@@ -14,7 +14,7 @@ HPSprite::HPSprite(int maxHP):
 	
 	texture = ResourceManagers::GetInstance()->GetTexture("white");
 	m_pSpriteMaxHP = std::make_shared<Sprite2D>(model, shader, texture);
-	m_pSpriteMaxHP->SetSize(20, 5);
+	m_pSpriteMaxHP->SetSize(m_width, m_height);
 }
 
 HPSprite::~HPSprite()
@@ -23,12 +23,12 @@ HPSprite::~HPSprite()
 void HPSprite::Set2DPosition(int x, int y)
 {
 	m_pSpriteMaxHP->Set2DPosition(x, y);
-	m_pSpriteCurrentHP->Set2DPosition(x - 10 + 20 * m_currentHP / m_maxHP / 2, y);
+	m_pSpriteCurrentHP->Set2DPosition(x - m_width/2 + m_width * m_currentHP / m_maxHP / 2, y);
 }
 
 void HPSprite::Draw()
 {
-	m_pSpriteCurrentHP->SetSize(20*m_currentHP/m_maxHP, 5);
+	m_pSpriteCurrentHP->SetSize(m_width*m_currentHP/m_maxHP, m_height);
 	m_pSpriteMaxHP->Draw();
 	m_pSpriteCurrentHP->Draw();
 }
@@ -43,5 +43,7 @@ void HPSprite::SetMaxHP(int maxHP)
 	m_maxHP = maxHP;
 }
 
-void HPSprite::Update()
-{}
+void HPSprite::Update(int currentHP)
+{
+	m_currentHP = currentHP;
+}

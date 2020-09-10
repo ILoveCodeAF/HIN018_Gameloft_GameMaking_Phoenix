@@ -12,10 +12,12 @@ public:
 	void Draw();
 	void SetCurrentHP(int currentHP);
 	void SetMaxHP(int maxHP);
-	void Update();
+	void Update(int currentHP);
 private:
 	int m_maxHP;
 	int m_currentHP;
+	int m_height;
+	int m_width;
 	std::shared_ptr<Sprite2D> m_pSpriteMaxHP;
 	std::shared_ptr<Sprite2D> m_pSpriteCurrentHP;
 };

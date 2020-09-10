@@ -54,6 +54,9 @@ public:
 	int			GetPositionY();
 	int			GetDirection() { return m_left; }
 	int			GetHeight() { return m_currentAnimation->m_height[m_currentFrame]; }
+	int			GetWidth() { return m_currentAnimation->m_width[m_currentFrame]; }
+	int			GetCurrentFrame() { return m_currentFrame; }
+	std::string GetState() { return m_currentAnimation->m_name; }
 
 protected:
 	int m_x;

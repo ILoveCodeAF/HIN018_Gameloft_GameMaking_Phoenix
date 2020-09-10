@@ -68,7 +68,17 @@ void GSPlay::Init()
 	texture = ResourceManagers::GetInstance()->GetTexture("thorny");
 	auto thorny = std::make_shared<Character>(model, shader, texture, 3000, 10); 
 	thorny->loadAnimation("thorny");
-	m_listCharacter.push_back(thorny);
+	m_listEnemyCharacter.push_back(thorny);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
+	auto wave_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
+	wave_attack->loadAnimation("wave_attack");
+	m_mapAttackAnimation["wave_attack"] = wave_attack;
+
+	texture = ResourceManagers::GetInstance()->GetTexture("light_ball_attack");
+	auto light_ball_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
+	light_ball_attack->loadAnimation("light_ball_attack");
+	m_mapAttackAnimation["light_ball_attack"] = light_ball_attack;
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -171,73 +181,26 @@ void GSPlay::Update(float deltaTime)
 	{
 		obj->Update(deltaTime);
 	}*/
-	int x = m_mainCharacter->GetPositionX();
-	int y = m_mainCharacter->GetPositionY();
-	int velocityX = 160;
-	int velocityY = 180;
 
-	if (m_jumpDuration > 0 || y < screenHeight*7/8)
-	{
-		if (m_key & KEY_A && !(m_key & KEY_D))
-		{
-			x -= deltaTime * velocityX;
-			
-		}
-		else if (m_key & KEY_D && !(m_key & KEY_A))
-		{
-			x += deltaTime * velocityX;
-		}
-		if (m_jumpDuration > 0.6f)
-		{
-			y -= deltaTime * velocityY;
-		}
-		else
-		{
-			y += deltaTime * velocityY;
-		}
-		m_jumpDuration -= deltaTime;
-	}
-	else if (m_key & KEY_W)
-	{
-		m_mainCharacter->SetAnimation(JUMP);
-		m_jumpDuration = 1.2f;
-	}
-	else if (m_key & KEY_K && !(m_key & KEY_J))
-	{
-		m_mainCharacter->SetAnimation(KICK);
-	}
-	else if (m_key & KEY_J && !(m_key & KEY_K))
-	{
-		m_mainCharacter->SetAnimation(PUNCH);
-	}
-	else if (m_key & KEY_A && !(m_key & KEY_D))
-	{
-		x -= deltaTime * velocityX;
-		m_mainCharacter->SetAnimation(RUN);
-	}
-	else if (m_key & KEY_D && !(m_key & KEY_A))
-	{
-		x += deltaTime * velocityX;
-		m_mainCharacter->SetAnimation(RUN);
-	}
-	else
-	{
-		m_mainCharacter->SetAnimation(IDLE);
-	}
-
-	if (x < 0)
-		x = 0;
-	if (x > screenWidth)
-		x = screenWidth;
-	if (y > screenHeight * 7 / 8)
-		y = screenHeight * 7 / 8;
-	m_mainCharacter->Set2DPosition(x, y);
-	m_mainCharacter->Update(deltaTime);
-
-	for (auto obj : m_listCharacter)
+	Control(m_mainCharacter, m_key, deltaTime);
+	
+	for (auto obj : m_listEnemyCharacter)
 	{
 		obj->Update(deltaTime);
 	}
+	DetectCollision();
+	/*
+	for (auto obj : m_listEnemyAttack)
+	{
+		if (obj->Alive())
+			obj->Update(deltaTime);
+	}
+
+	for (auto obj : m_listMCAttack)
+	{
+		if (obj->Alive())
+			obj->Update(deltaTime);
+	}*/
 }
 
 void GSPlay::Draw()
@@ -255,14 +218,158 @@ void GSPlay::Draw()
 	}*/
 	//m_score->Draw();
 	
-	for (auto obj : m_listCharacter)
+	
+	for (auto obj : m_listEnemyCharacter)
 	{
 		obj->Draw();
 	}
 
 	m_mainCharacter->Draw();
+
+	for (auto obj : m_listEnemyAttack)
+	{
+		if (obj->Alive())
+			obj->Draw();
+	}
+
+	for (auto obj : m_listMCAttack)
+	{
+		if(obj->Alive())
+			obj->Draw();
+	}
 }
+
+void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaTime, bool isEnemy)
+{
+	int x = character->GetPositionX();
+	int y = character->GetPositionY();
+	int velocityX = 160;
+	int velocityY = 180;
+
+	float jumpDuration = character->GetJumpDuration();
+	if (jumpDuration > 0.0f || y < screenHeight * 7 / 8)
+	{
+		if (key & KEY_A && !(key & KEY_D))
+		{
+			x -= deltaTime * velocityX;
+
+		}
+		else if (key & KEY_D && !(key & KEY_A))
+		{
+			x += deltaTime * velocityX;
+		}
+		if (jumpDuration > 0.6f)
+		{
+			y -= deltaTime * velocityY;
+		}
+		else
+		{
+			y += deltaTime * velocityY;
+		}
+		jumpDuration -= deltaTime;
+		character->SetJumpDuration(jumpDuration);
+	}
+	else if (key & KEY_W)
+	{
+		character->SetAnimation(JUMP);
+		character->SetJumpDuration(1.2f);
+	}
+	else if (key & KEY_K && !(key & KEY_J))
+	{
+		character->SetAnimation(KICK);
+		CreateAttack(character, isEnemy, "wave_attack");
+	}
+	else if (key & KEY_J && !(key & KEY_K))
+	{
+		character->SetAnimation(PUNCH);
+	}
+	else if (key & KEY_A && !(key & KEY_D))
+	{
+		x -= deltaTime * velocityX;
+		character->SetAnimation(RUN);
+	}
+	else if (key & KEY_D && !(key & KEY_A))
+	{
+		x += deltaTime * velocityX;
+		character->SetAnimation(RUN);
+	}
+	else
+	{
+		character->SetAnimation(IDLE);
+	}
+
+	if (x < 0)
+		x = 0;
+	if (x > screenWidth)
+		x = screenWidth;
+	if (y > screenHeight * 7 / 8)
+		y = screenHeight * 7 / 8;
+	character->Set2DPosition(x, y);
+	character->Update(deltaTime);
+
+}
+
+void GSPlay::CreateAttack(std::shared_ptr<Character> character, bool isEnemy, std::string type)
+{
+	if (character->IsKick())
+	{
+		auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
+		auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
+		auto texture = ResourceManagers::GetInstance()->GetTexture(type);
+
+		auto attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
+		attack->loadAnimation(type);
+		attack->SetDirection(200 * character->GetDirection(), 0);
+		attack->SetDuration(4.0f);
+		attack->Left(character->GetDirection() == -1);
+		attack->SetPosition(character->GetPositionX(), character->GetPositionY());
+		if (isEnemy)
+		{
+			m_listEnemyAttack.push_back(attack);
+		}
+		else
+		{
+			m_listMCAttack.push_back(attack);
+		}
+	}
+}
+
+
 
 void GSPlay::SetNewPostionForBullet()
 {
+}
+
+bool GSPlay::IsCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2)
+{
+	if (x1 < x2 && x1 + w1 < x2)
+		return false;
+	if (x2 < x1 && x2 + w2 < x1)
+		return false;
+	if (y1 > y2 && y1 - h1 > y2)
+		return false;
+	if (y2 > y1 && y2 - h2 > y1)
+		return false;
+	return true;
+}
+void GSPlay::DetectCollision()
+{
+	if (m_mainCharacter->GetState() == JUMP)
+	{
+		int w1 = m_mainCharacter->GetWidth();
+		int h1 = m_mainCharacter->GetHeight();
+		int x1 = m_mainCharacter->GetPositionX() - w1 / 2;
+		int y1 = m_mainCharacter->GetPositionY();
+		for (auto enemy : m_listEnemyCharacter)
+		{
+			int w2 = enemy->GetWidth();
+			int h2 = enemy->GetHeight();
+			int x2 = enemy->GetPositionX() - w2 / 2;
+			int y2 = enemy->GetPositionY();
+			if (IsCollision(x1, y1, w1, h1, x2, y2, w2, h2))
+			{
+				enemy->GotAttacked(30);
+			}
+		}
+	}
 }
