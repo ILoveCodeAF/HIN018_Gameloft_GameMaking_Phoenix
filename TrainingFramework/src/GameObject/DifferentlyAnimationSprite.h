@@ -43,7 +43,7 @@ public:
 	~DifferentlyAnimationSprite();
 
 	void		Init() override;
-	void		loadAnimation(std::string path);
+	void		loadAnimation(std::string path, float scale = 1.0f);
 	void		SetAnimation(std::string animation_name);
 	void		ResetAnimation(std::string animation_name);
 	void		Draw() override;

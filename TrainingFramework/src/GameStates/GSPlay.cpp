@@ -67,8 +67,13 @@ void GSPlay::Init()
 
 	texture = ResourceManagers::GetInstance()->GetTexture("thorny");
 	auto thorny = std::make_shared<Character>(model, shader, texture, 3000, 10); 
-	thorny->loadAnimation("thorny");
+	thorny->loadAnimation("thorny", 0.5f);
 	m_listEnemyCharacter.push_back(thorny);
+
+	texture = ResourceManagers::GetInstance()->GetTexture("guard");
+	auto guard = std::make_shared<Character>(model, shader, texture, 30000, 10);
+	guard->loadAnimation("guard", 0.25f);
+	m_listEnemyCharacter.push_back(guard);
 
 	/*texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
 	auto wave_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
@@ -367,22 +372,23 @@ void GSPlay::DetectCollision()
 {
 	for (auto enemy : m_listEnemyCharacter)
 	{
-		for (auto hitBox : m_listMCAttack)
-		{
-			if (hitBox->IsAlive())
+		if(enemy->Alive())
+			for (auto hitBox : m_listMCAttack)
 			{
-				int w = enemy->GetWidth();
-				int h = enemy->GetHeight();
-				int y = enemy->GetPositionY();
-				int x = enemy->GetPositionX() - w / 2;
-				if (hitBox->DetectCollision(x, y, w, h))
+				if (hitBox->IsAlive())
 				{
-					enemy->GotAttacked(hitBox->GetDamage());
-					hitBox->Expire();
+					int w = enemy->GetWidth();
+					int h = enemy->GetHeight();
+					int y = enemy->GetPositionY();
+					int x = enemy->GetPositionX() - w / 2;
+					if (hitBox->DetectCollision(x, y, w, h))
+					{
+						enemy->GotAttacked(hitBox->GetDamage());
+						hitBox->Expire();
+					}
 				}
-			}
 			
-		}
+			}
 	}
 	if (m_mainCharacter->GetState() == JUMP)
 	{

@@ -39,7 +39,7 @@ void DifferentlyAnimationSprite::Init()
 	Sprite2D::Init();
 }
 
-void DifferentlyAnimationSprite::loadAnimation(std::string path)
+void DifferentlyAnimationSprite::loadAnimation(std::string path, float scale)
 {
 	std::string dataPath = "..\\Data\\Objects\\";
 	std::string animationsPath = dataPath + path + "\\animations";
@@ -68,8 +68,8 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 			dx = (dx == 0) ? 0 : (x - dx)/3;
 			dy = (dy == 0) ? 0 : (y - dy)/3;
 			std::cout << x << " - " << y << " - " << w << " - " << h << std::endl;
-			animation.m_width.push_back(w);
-			animation.m_height.push_back(h);
+			animation.m_width.push_back(w*scale);
+			animation.m_height.push_back(h*scale);
 			animation.m_vertices_x0.push_back(float(x) / width);
 			animation.m_vertices_x1.push_back(float(x + w) / width);
 			animation.m_vertices_y0.push_back(float(height-h-y) / height);

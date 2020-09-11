@@ -12,7 +12,7 @@ public:
 	~Character();
 
 	void		Init();
-	void		loadAnimation(std::string path);
+	void		loadAnimation(std::string path, float scale = 1.0f);
 	void		SetAnimation(std::string animation_name);
 	void		ResetAnimation(std::string animation_name);
 	void		Draw();
@@ -26,6 +26,7 @@ public:
 	int			GetHeight() { return m_animations->GetHeight(); }
 	int			GetWidth() { return m_animations->GetWidth(); }
 	std::string	GetState() { return m_animations->GetState(); }
+	bool		Alive() { return GetState() != DIE; }
 
 	int			GetDirection() { return m_animations->GetDirection(); }
 	float		GetJumpDuration() { return m_jumpDuration; }
@@ -40,5 +41,6 @@ private:
 	int m_currentHP;
 	int m_attackDamage;
 	float m_jumpDuration;
+	bool m_isAttacking;
 
 };

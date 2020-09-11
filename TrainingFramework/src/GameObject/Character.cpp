@@ -20,9 +20,9 @@ void Character::Init()
 	m_animations->Init();
 }
 
-void Character::loadAnimation(std::string path)
+void Character::loadAnimation(std::string path, float scale)
 {
-	m_animations->loadAnimation(path);
+	m_animations->loadAnimation(path, scale);
 }
 
 void Character::SetAnimation(std::string animation_name)
