@@ -15,6 +15,7 @@ class Text;
 #define PUNCH	"punch"
 #define KICK	"kick"
 #define FALL	"fall"
+#define DIE		"die"
 
 struct Animation 
 {
@@ -44,6 +45,7 @@ public:
 	void		Init() override;
 	void		loadAnimation(std::string path);
 	void		SetAnimation(std::string animation_name);
+	void		ResetAnimation(std::string animation_name);
 	void		Draw() override;
 	void		Update(GLfloat deltatime) override;
 	//void		Update(GLfloat deltatime, int &x, int &y);

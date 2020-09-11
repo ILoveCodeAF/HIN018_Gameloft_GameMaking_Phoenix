@@ -5,7 +5,8 @@
 #include "ScrollAnimationSprite.h"
 #include "Character.h"
 #include "StageMap.h"
-#include "AttackAnimation.h"
+#include "HitBox.h"
+
 
 class Sprite2D;
 class Sprite3D;
@@ -33,7 +34,7 @@ public:
 	void Draw();
 
 	void Control(std::shared_ptr<Character> ch, int key, float deltaTime, bool isEnemy = false);
-	void CreateAttack(std::shared_ptr<Character> character, bool isEnery, std::string type);
+	//void CreateAttack(std::shared_ptr<Character> character, bool isEnery, std::string type);
 	void SetNewPostionForBullet();
 	void DetectCollision();
 	
@@ -49,9 +50,10 @@ private:
 	std::shared_ptr<Character> m_mainCharacter;
 	//::vector<std::shared_ptr<DifferentlyAnimationSprite>> m_listAnimation;
 	std::vector<std::shared_ptr<Character>> m_listEnemyCharacter;
-	std::vector < std::shared_ptr<AttackAnimation>> m_listMCAttack;
-	std::vector < std::shared_ptr<AttackAnimation>> m_listEnemyAttack;
+	std::vector < std::shared_ptr<HitBox>> m_listMCAttack;
+	std::vector < std::shared_ptr<HitBox>> m_listEnemyAttack;
 
-	std::unordered_map<std::string, std::shared_ptr<AttackAnimation>> m_mapAttackAnimation;
+	//std::unordered_map<std::string, std::shared_ptr<AttackAnimation>> m_mapAttackAnimation;
+	std::shared_ptr<HitBox> Attack(std::shared_ptr<Character> character, int w, int h, int duration);
 };
 

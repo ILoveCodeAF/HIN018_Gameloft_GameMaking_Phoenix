@@ -70,7 +70,7 @@ void GSPlay::Init()
 	thorny->loadAnimation("thorny");
 	m_listEnemyCharacter.push_back(thorny);
 
-	texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
+	/*texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
 	auto wave_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
 	wave_attack->loadAnimation("wave_attack");
 	m_mapAttackAnimation["wave_attack"] = wave_attack;
@@ -78,7 +78,7 @@ void GSPlay::Init()
 	texture = ResourceManagers::GetInstance()->GetTexture("light_ball_attack");
 	auto light_ball_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
 	light_ball_attack->loadAnimation("light_ball_attack");
-	m_mapAttackAnimation["light_ball_attack"] = light_ball_attack;
+	m_mapAttackAnimation["light_ball_attack"] = light_ball_attack;*/
 
 	//text game title
 	shader = ResourceManagers::GetInstance()->GetShader("TextShader");
@@ -189,18 +189,18 @@ void GSPlay::Update(float deltaTime)
 		obj->Update(deltaTime);
 	}
 	DetectCollision();
-	/*
+	
 	for (auto obj : m_listEnemyAttack)
 	{
-		if (obj->Alive())
+		if (obj->IsAlive())
 			obj->Update(deltaTime);
 	}
 
 	for (auto obj : m_listMCAttack)
 	{
-		if (obj->Alive())
+		if (obj->IsAlive())
 			obj->Update(deltaTime);
-	}*/
+	}
 }
 
 void GSPlay::Draw()
@@ -226,7 +226,7 @@ void GSPlay::Draw()
 
 	m_mainCharacter->Draw();
 
-	for (auto obj : m_listEnemyAttack)
+	/*for (auto obj : m_listEnemyAttack)
 	{
 		if (obj->Alive())
 			obj->Draw();
@@ -236,7 +236,7 @@ void GSPlay::Draw()
 	{
 		if(obj->Alive())
 			obj->Draw();
-	}
+	}*/
 }
 
 void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaTime, bool isEnemy)
@@ -271,17 +271,26 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	}
 	else if (key & KEY_W)
 	{
-		character->SetAnimation(JUMP);
+		character->ResetAnimation(JUMP);
 		character->SetJumpDuration(1.2f);
 	}
 	else if (key & KEY_K && !(key & KEY_J))
 	{
 		character->SetAnimation(KICK);
-		CreateAttack(character, isEnemy, "wave_attack");
+		if (character->Attack())
+		{
+			m_listMCAttack.push_back(Attack(character, character->GetWidth() / 2, character->GetHeight(), 1.0f));
+		}
+		//CreateAttack(character, isEnemy, "wave_attack");
+		
 	}
 	else if (key & KEY_J && !(key & KEY_K))
 	{
 		character->SetAnimation(PUNCH);
+		if (character->Attack())
+		{
+			m_listMCAttack.push_back(Attack(character, character->GetWidth() / 2, character->GetHeight(), 1.0f));
+		}
 	}
 	else if (key & KEY_A && !(key & KEY_D))
 	{
@@ -309,9 +318,9 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 
 }
 
-void GSPlay::CreateAttack(std::shared_ptr<Character> character, bool isEnemy, std::string type)
+/*void GSPlay::CreateAttack(std::shared_ptr<Character> character, bool isEnemy, std::string type)
 {
-	if (character->IsKick())
+	if (character->Attack())
 	{
 		auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 		auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
@@ -332,7 +341,9 @@ void GSPlay::CreateAttack(std::shared_ptr<Character> character, bool isEnemy, st
 			m_listMCAttack.push_back(attack);
 		}
 	}
-}
+}*/
+
+
 
 
 
@@ -354,6 +365,25 @@ bool GSPlay::IsCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
 }
 void GSPlay::DetectCollision()
 {
+	for (auto enemy : m_listEnemyCharacter)
+	{
+		for (auto hitBox : m_listMCAttack)
+		{
+			if (hitBox->IsAlive())
+			{
+				int w = enemy->GetWidth();
+				int h = enemy->GetHeight();
+				int y = enemy->GetPositionY();
+				int x = enemy->GetPositionX() - w / 2;
+				if (hitBox->DetectCollision(x, y, w, h))
+				{
+					enemy->GotAttacked(hitBox->GetDamage());
+					hitBox->Expire();
+				}
+			}
+			
+		}
+	}
 	if (m_mainCharacter->GetState() == JUMP)
 	{
 		int w1 = m_mainCharacter->GetWidth();
@@ -372,4 +402,14 @@ void GSPlay::DetectCollision()
 			}
 		}
 	}
+}
+
+std::shared_ptr<HitBox> GSPlay::Attack(std::shared_ptr<Character> character, int w, int h, int duration)
+{
+	int x = character->GetPositionX();
+	int y = character->GetPositionY();
+	if (character->GetDirection() == -1) {
+		x -= w;
+	}
+	return std::make_shared<HitBox>(x, y, w, h, 100, duration);
 }

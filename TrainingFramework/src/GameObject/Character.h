@@ -14,6 +14,7 @@ public:
 	void		Init();
 	void		loadAnimation(std::string path);
 	void		SetAnimation(std::string animation_name);
+	void		ResetAnimation(std::string animation_name);
 	void		Draw();
 	void		Update(GLfloat deltaTime);
 	void		Left(bool is_left);
@@ -29,8 +30,8 @@ public:
 	int			GetDirection() { return m_animations->GetDirection(); }
 	float		GetJumpDuration() { return m_jumpDuration; }
 	void		SetJumpDuration(float time) { m_jumpDuration = time; }
-	bool		IsKick() { return m_animations->GetCurrentFrame() == 0; }
-	void		GotAttacked(int dmg) { m_currentHP = m_currentHP > dmg ? m_currentHP - dmg : 0; }
+	bool		Attack() { return m_animations->GetCurrentFrame() == 0; }
+	void		GotAttacked(int dmg);
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;

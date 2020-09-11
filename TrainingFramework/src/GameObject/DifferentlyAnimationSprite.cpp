@@ -105,6 +105,8 @@ void DifferentlyAnimationSprite::loadAnimation(std::string path)
 
 void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
 {	
+	if (m_currentAnimation != nullptr && m_currentAnimation->m_name == DIE)
+		return;
 	if (m_currentAnimation == nullptr || m_currentAnimation->m_name != animation_name || m_currentFrame == m_numFrames)
 	{
 		m_currentAnimation = &m_mapAnimation[animation_name];
@@ -116,6 +118,20 @@ void DifferentlyAnimationSprite::SetAnimation(std::string animation_name)
 		//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
 		this->Draw();
 	}
+}
+
+void DifferentlyAnimationSprite::ResetAnimation(std::string animation_name)
+{
+	if (m_currentAnimation != nullptr && m_currentAnimation->m_name == DIE)
+		return;
+	m_currentAnimation = &m_mapAnimation[animation_name];
+	this->m_currentFrame = 0;
+	this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
+	this->SetSize(m_currentAnimation->m_width[m_currentFrame], m_currentAnimation->m_height[m_currentFrame]);
+	this->m_numFrames = m_currentAnimation->m_width.size();
+	this->m_frameTime = m_currentAnimation->m_frameTime;
+	//this->ChangePosition(m_currentAnimation->m_delta_x[m_currentFrame], m_currentAnimation->m_delta_y[m_currentFrame]);
+	this->Draw();
 }
 
 void DifferentlyAnimationSprite::SetPosition(int x, int y)
@@ -244,10 +260,16 @@ void DifferentlyAnimationSprite::Update(GLfloat deltatime)
 		{
 			if (m_currentAnimation->m_loop == -1)
 			{
-				m_currentFrame = 0;
-				//this->SetAnimation(IDLE);
-				//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
 				m_currentTime -= m_frameTime;
+				if (m_currentAnimation->m_name == DIE)
+				{
+					m_currentFrame = m_numFrames - 1;
+					return;
+				}
+				//m_currentFrame = 0;
+				this->SetAnimation(IDLE);
+				//this->Set2DPosition(m_x, m_y - m_currentAnimation->m_height[m_currentFrame] / 2);
+				
 				return;
 			}
 			else

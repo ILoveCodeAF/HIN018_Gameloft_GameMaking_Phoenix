@@ -30,6 +30,11 @@ void Character::SetAnimation(std::string animation_name)
 	m_animations->SetAnimation(animation_name);
 }
 
+void Character::ResetAnimation(std::string animation_name)
+{
+	m_animations->ResetAnimation(animation_name);
+}
+
 void Character::Draw()
 {
 	m_hpSprite->Draw();
@@ -38,6 +43,16 @@ void Character::Draw()
 
 void Character::Update(GLfloat deltaTime)
 {
+	if (m_currentHP <= 0)
+	{
+		m_currentHP = 0;
+		if (m_animations->GetState() != DIE)
+		{
+			//std::cout << m_animations->GetState() << '-';
+			m_currentHP = 0;
+			SetAnimation(DIE);
+		}
+	}
 	m_hpSprite->SetCurrentHP(m_currentHP);
 	m_hpSprite->Set2DPosition(m_animations->GetPositionX(), m_animations->GetPositionY() - m_animations->GetHeight() - 10);
 	m_animations->Update(deltaTime);
@@ -63,3 +78,11 @@ void Character::HandleKey(int key)
 	m_animations->ChangeAnimation(key);
 }
 
+void Character::GotAttacked(int dmg)
+{
+	m_currentHP = m_currentHP > dmg ? m_currentHP - dmg : 0;
+	if (m_currentHP == 0)
+	{
+		SetAnimation(DIE);
+	}
+}
