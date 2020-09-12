@@ -61,6 +61,7 @@ public:
 	int			GetHeight() { return m_currentAnimation->m_height[m_currentFrame]; }
 	int			GetWidth() { return m_currentAnimation->m_width[m_currentFrame]; }
 	int			GetCurrentFrame() { return m_currentFrame; }
+	int			GetNumFrames() { return m_numFrames; }
 	std::string GetState() { return m_currentAnimation->m_name; }
 
 protected:

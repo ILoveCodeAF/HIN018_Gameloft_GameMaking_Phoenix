@@ -10,6 +10,7 @@ Character::Character(std::shared_ptr<Models> model, std::shared_ptr<Shaders> sha
 	m_animations = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
 	m_hpSprite = std::make_shared<HPSprite>(maxHP);
 	m_jumpDuration = 0.0f;
+	m_jumpCauseDamage = false;
 }
 
 Character::~Character()
@@ -82,6 +83,7 @@ void Character::HandleKey(int key)
 void Character::GotAttacked(int dmg)
 {
 	m_currentHP = m_currentHP > dmg ? m_currentHP - dmg : 0;
+	m_currentHP = m_currentHP > m_maxHP ? m_maxHP : m_currentHP;
 	if (m_currentHP == 0)
 	{
 		SetAnimation(DIE);

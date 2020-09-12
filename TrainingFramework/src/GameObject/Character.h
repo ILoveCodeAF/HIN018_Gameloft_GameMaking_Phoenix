@@ -38,6 +38,9 @@ public:
 	bool		Attacking() { return m_isAttacking; }
 	void		SetStateAttacking(bool isAttacking) { m_isAttacking = isAttacking; }
 	int			GetAttackDamage() { return m_attackDamage; }
+	bool		JumpCauseDamage() { return m_jumpCauseDamage; }
+	void		SetJumpCauseDamage(bool jumpcauseDamage) { m_jumpCauseDamage = jumpcauseDamage; }
+	int			GetMaxHP() { return m_maxHP; }
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;
@@ -46,6 +49,7 @@ private:
 	int m_currentHP;
 	int m_attackDamage;
 	float m_jumpDuration;
+	bool m_jumpCauseDamage;
 	bool m_isAttacking;
 
 };

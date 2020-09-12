@@ -269,8 +269,15 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	int velocityY = 180;
 
 	float jumpDuration = character->GetJumpDuration();
+
 	if (jumpDuration > 0.0f || y < screenHeight * 7 / 8)
 	{
+		/*if (!character->JumpCauseDamage() && key & KEY_W)
+		{
+			character->SetJumpCauseDamage(true);
+			jumpDuration = 1.2f;
+			character->ResetAnimation(JUMP);
+		}*/
 		if (key & KEY_A && !(key & KEY_D))
 		{
 			x -= deltaTime * velocityX;
@@ -293,6 +300,7 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	}
 	else if (key & KEY_W)
 	{
+		character->SetJumpCauseDamage(true);
 		character->ResetAnimation(JUMP);
 		character->SetJumpDuration(1.2f);
 	}
@@ -310,6 +318,9 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	else if (key & KEY_J && !(key & KEY_K))
 	{
 		m_mainCharacter->SetStateAttacking(true);
+		//if (rand() % 2)
+		//character->SetAnimation(PUNCH);
+		//else
 		character->SetAnimation(PUNCH);
 		if (character->Attack())
 		{
@@ -414,7 +425,15 @@ void GSPlay::DetectCollision()
 	DetectCollision(m_mainCharacter, m_listEnemyAttack);
 	for (auto enemy : m_listEnemyCharacter)
 	{
-		DetectCollision(enemy, m_listMCAttack);
+		if (enemy->Alive())
+		{
+			DetectCollision(enemy, m_listMCAttack);
+			if (!enemy->Alive())
+			{
+				m_mainCharacter->GotAttacked(-enemy->GetMaxHP() / 10);
+			}
+		}
+		
 	}
 	if (m_mainCharacter->GetState() == JUMP)
 	{
@@ -427,10 +446,11 @@ void GSPlay::DetectCollision()
 			int w2 = enemy->GetWidth();
 			int h2 = enemy->GetHeight();
 			int x2 = enemy->GetPositionX() - w2 / 2;
-			int y2 = enemy->GetPositionY();
-			if (IsCollision(x1, y1, w1, h1, x2, y2, w2, h2))
+			int y2 = enemy->GetPositionY() - h2 * 3 / 4;
+			if (m_mainCharacter->JumpCauseDamage() && IsCollision(x1, y1, w1, h1, x2, y2, w2, h2))
 			{
-				enemy->GotAttacked(30);
+				enemy->GotAttacked(300);
+				m_mainCharacter->SetJumpCauseDamage(false);
 			}
 		}
 	}
