@@ -20,6 +20,8 @@ public:
 	void		Left(bool is_left);
 	void		Set2DPosition(int x, int y);
 	void		Set2DPosition(Vector2&);
+	void		SetPositionX(int x) { m_animations->SetPositionX(x); }
+	void		SetPositionY(int y) { m_animations->SetPositionY(y); }
 	void		HandleKey(int key);
 	int			GetPositionX() { return m_animations->GetPositionX(); }
 	int			GetPositionY() { return m_animations->GetPositionY(); }
@@ -33,6 +35,9 @@ public:
 	void		SetJumpDuration(float time) { m_jumpDuration = time; }
 	bool		Attack() { return m_animations->GetCurrentFrame() == 0; }
 	void		GotAttacked(int dmg);
+	bool		Attacking() { return m_isAttacking; }
+	void		SetStateAttacking(bool isAttacking) { m_isAttacking = isAttacking; }
+	int			GetAttackDamage() { return m_attackDamage; }
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;

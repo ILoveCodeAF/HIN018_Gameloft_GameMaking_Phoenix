@@ -8,6 +8,8 @@
 #include "Sprite2D.h"
 #include "Sprite3D.h"
 #include "Text.h"
+#include <stdlib.h>
+#include <time.h>
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -31,6 +33,7 @@ GSPlay::~GSPlay()
 
 void GSPlay::Init()
 {
+	srand(time(NULL));
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	//auto texture = ResourceManagers::GetInstance()->GetTexture("bg_play");
 
@@ -60,7 +63,7 @@ void GSPlay::Init()
 	//tohsaka_rin->Set2DPosition(Vector2(500, 300));
 	////tohsaka_rin->SetSize(75, 112);
 	//m_listAnimation.push_back(tohsaka_rin);
-	m_mainCharacter = std::make_shared<Character>(model, shader, texture, 3000, 10);
+	m_mainCharacter = std::make_shared<Character>(model, shader, texture, 3000, 500);
 	m_mainCharacter->loadAnimation("tohsaka_rin");
 	//m_mainCharacter->Set2DPosition(Vector2(500, 300));
 	//tohsaka_rin->SetSize(75, 112);
@@ -68,12 +71,18 @@ void GSPlay::Init()
 	texture = ResourceManagers::GetInstance()->GetTexture("thorny");
 	auto thorny = std::make_shared<Character>(model, shader, texture, 3000, 10); 
 	thorny->loadAnimation("thorny", 0.5f);
+	thorny->SetPositionX(rand() % screenWidth);
 	m_listEnemyCharacter.push_back(thorny);
+	m_controlUnitCommand.push_back("");
+	m_controlUnitDuration.push_back(0.0f);
 
 	texture = ResourceManagers::GetInstance()->GetTexture("guard");
 	auto guard = std::make_shared<Character>(model, shader, texture, 30000, 10);
 	guard->loadAnimation("guard", 0.25f);
+	guard->SetPositionX(rand() % screenWidth);
 	m_listEnemyCharacter.push_back(guard);
+	m_controlUnitCommand.push_back("");
+	m_controlUnitDuration.push_back(0.0f);
 
 	/*texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
 	auto wave_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
@@ -124,20 +133,26 @@ void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 		switch (key)
 		{
 		case 'A':
+			m_mainCharacter->SetStateAttacking(false);
 			m_mainCharacter->Left(true);
 			m_key |= KEY_A;
 			break;
 		case 'D':
+			m_mainCharacter->SetStateAttacking(false);
 			m_mainCharacter->Left(false);
 			m_key |= KEY_D;
 			break;
 		case 'W':
+			m_mainCharacter->SetStateAttacking(false);
 			m_key |= KEY_W;
 			break;
 		case 'K':
+			m_mainCharacter->SetStateAttacking(false);
 			m_key |= KEY_K;
 			break;
+
 		case 'J':
+			m_mainCharacter->SetStateAttacking(false);
 			m_key |= KEY_J;
 			break;
 		default:
@@ -188,6 +203,7 @@ void GSPlay::Update(float deltaTime)
 	}*/
 
 	Control(m_mainCharacter, m_key, deltaTime);
+	ControlUnit(deltaTime);
 	
 	for (auto obj : m_listEnemyCharacter)
 	{
@@ -206,6 +222,7 @@ void GSPlay::Update(float deltaTime)
 		if (obj->IsAlive())
 			obj->Update(deltaTime);
 	}
+	CleanUp();
 }
 
 void GSPlay::Draw()
@@ -281,6 +298,7 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	}
 	else if (key & KEY_K && !(key & KEY_J))
 	{
+		m_mainCharacter->SetStateAttacking(true);
 		character->SetAnimation(KICK);
 		if (character->Attack())
 		{
@@ -291,6 +309,7 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	}
 	else if (key & KEY_J && !(key & KEY_K))
 	{
+		m_mainCharacter->SetStateAttacking(true);
 		character->SetAnimation(PUNCH);
 		if (character->Attack())
 		{
@@ -309,7 +328,8 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 	}
 	else
 	{
-		character->SetAnimation(IDLE);
+		if(!m_mainCharacter->Attacking())
+			character->SetAnimation(IDLE);
 	}
 
 	if (x < 0)
@@ -368,27 +388,33 @@ bool GSPlay::IsCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2,
 		return false;
 	return true;
 }
+
+void GSPlay::DetectCollision(std::shared_ptr<Character> character, std::vector < std::shared_ptr<HitBox>>& attacks)
+{
+	if (character->Alive())
+		for (auto hitBox : attacks)
+		{
+			if (hitBox->IsAlive())
+			{
+				int w = character->GetWidth();
+				int h = character->GetHeight();
+				int y = character->GetPositionY();
+				int x = character->GetPositionX() - w / 2;
+				if (hitBox->DetectCollision(x, y, w, h))
+				{
+					character->GotAttacked(hitBox->GetDamage());
+					hitBox->Expire();
+				}
+			}
+
+		}
+}
 void GSPlay::DetectCollision()
 {
+	DetectCollision(m_mainCharacter, m_listEnemyAttack);
 	for (auto enemy : m_listEnemyCharacter)
 	{
-		if(enemy->Alive())
-			for (auto hitBox : m_listMCAttack)
-			{
-				if (hitBox->IsAlive())
-				{
-					int w = enemy->GetWidth();
-					int h = enemy->GetHeight();
-					int y = enemy->GetPositionY();
-					int x = enemy->GetPositionX() - w / 2;
-					if (hitBox->DetectCollision(x, y, w, h))
-					{
-						enemy->GotAttacked(hitBox->GetDamage());
-						hitBox->Expire();
-					}
-				}
-			
-			}
+		DetectCollision(enemy, m_listMCAttack);
 	}
 	if (m_mainCharacter->GetState() == JUMP)
 	{
@@ -417,5 +443,106 @@ std::shared_ptr<HitBox> GSPlay::Attack(std::shared_ptr<Character> character, int
 	if (character->GetDirection() == -1) {
 		x -= w;
 	}
-	return std::make_shared<HitBox>(x, y, w, h, 100, duration);
+	return std::make_shared<HitBox>(x, y, w, h, character->GetAttackDamage(), duration);
+}
+
+void GSPlay::ControlUnit(float deltaTime)
+{
+	for (int i = 0; i < m_listEnemyCharacter.size(); ++i)
+	{
+		if (m_listEnemyCharacter[i]->Alive())
+		{
+			m_controlUnitDuration[i] -= deltaTime;
+			if (m_controlUnitDuration[i] <= 0.0f)
+			{
+				m_controlUnitDuration[i] = rand() % 5;
+				switch (rand() % 4)
+				{
+				case 0:
+					m_controlUnitCommand[i] = IDLE;
+					break;
+				case 1:
+					m_listEnemyCharacter[i]->Left(true);
+					m_controlUnitCommand[i] = RUN;
+					break;
+				case 2:
+					m_listEnemyCharacter[i]->Left(false);
+					m_controlUnitCommand[i] = RUN;
+					break;
+				case 3:
+					m_controlUnitCommand[i] = ATTACK;
+					break;
+				default:
+					break;
+				}
+			}
+			else 
+			{
+				Control(m_listEnemyCharacter[i], m_controlUnitCommand[i], deltaTime, true);
+			}
+		}
+	}
+}
+
+void GSPlay::Control(std::shared_ptr<Character> character, std::string command, float deltaTime, bool isEnemy)
+{
+	character->SetAnimation(command);
+	int x = character->GetPositionX();
+	int y = character->GetPositionY();
+	int velocityX = rand() %150 + 50;
+	int velocityY = rand() % 150 + 50;
+
+	if (command == IDLE)
+	{
+		return;
+		//do nothing
+	}
+	else if (command == RUN)
+	{
+		x += velocityX * deltaTime * character->GetDirection();
+		if (x < 0)
+			x = 0;
+		if (x > screenWidth)
+			x = screenWidth;
+		if (y > screenHeight * 7 / 8)
+			y = screenHeight * 7 / 8;
+		character->Set2DPosition(x, y);
+	}
+	else if (command == ATTACK)
+	{
+		if (character->Attack())
+		{
+			m_listEnemyAttack.push_back(Attack(character, character->GetWidth() / 2, character->GetHeight(), 1.0f));
+		}
+	}	
+	character->Update(deltaTime);
+}
+
+void GSPlay::CleanUp(std::vector < std::shared_ptr<HitBox>> &attacks)
+{
+	int left = 0, right = attacks.size() - 1;
+	while (left <= right)
+	{
+		if (!attacks[left]->IsAlive())
+		{
+			if (left < right)
+			{
+				auto temp = attacks[left];
+				attacks[left] = attacks[right];
+				attacks[right] = temp;
+			}
+			right--;
+		}
+		else
+		{
+			left++;
+		}
+	}
+	while (right < attacks.size())
+		attacks.pop_back();
+}
+void GSPlay::CleanUp()
+{
+	CleanUp(m_listEnemyAttack);
+	CleanUp(m_listMCAttack);
 }

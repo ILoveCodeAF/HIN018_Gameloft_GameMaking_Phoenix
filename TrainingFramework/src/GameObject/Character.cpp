@@ -43,6 +43,7 @@ void Character::Draw()
 
 void Character::Update(GLfloat deltaTime)
 {
+	//m_currentHP -= 50;
 	if (m_currentHP <= 0)
 	{
 		m_currentHP = 0;

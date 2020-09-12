@@ -40,6 +40,12 @@ public:
 	
 
 private:
+	void DetectCollision(std::shared_ptr<Character> character, std::vector < std::shared_ptr<HitBox>>& attacks);
+	void CleanUp();
+	void CleanUp(std::vector < std::shared_ptr<HitBox>> &attacks);
+
+	void Control(std::shared_ptr<Character> character, std::string command, float deltaTime, bool isEnemy);
+	void ControlUnit(float deltaTime);
 	bool IsCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
 	//std::vector <std::shared_ptr<Sprite2D>> m_listBackGround;
@@ -52,6 +58,8 @@ private:
 	std::vector<std::shared_ptr<Character>> m_listEnemyCharacter;
 	std::vector < std::shared_ptr<HitBox>> m_listMCAttack;
 	std::vector < std::shared_ptr<HitBox>> m_listEnemyAttack;
+	std::vector<float> m_controlUnitDuration;
+	std::vector<std::string> m_controlUnitCommand;
 
 	//std::unordered_map<std::string, std::shared_ptr<AttackAnimation>> m_mapAttackAnimation;
 	std::shared_ptr<HitBox> Attack(std::shared_ptr<Character> character, int w, int h, int duration);

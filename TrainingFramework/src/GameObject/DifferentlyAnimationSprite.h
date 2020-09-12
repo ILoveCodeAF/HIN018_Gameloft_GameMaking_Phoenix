@@ -16,6 +16,7 @@ class Text;
 #define KICK	"kick"
 #define FALL	"fall"
 #define DIE		"die"
+#define ATTACK	"attack"
 
 struct Animation 
 {
@@ -52,6 +53,8 @@ public:
 	void		Left(bool is_left);
 	void		ChangeAnimation(int key);
 	void		SetPosition(int x, int y);
+	void		SetPositionX(int x) { m_x = x; }
+	void		SetPositionY(int y) { m_y = y; }
 	int			GetPositionX();
 	int			GetPositionY();
 	int			GetDirection() { return m_left; }
