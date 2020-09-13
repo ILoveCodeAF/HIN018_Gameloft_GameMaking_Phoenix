@@ -40,6 +40,7 @@ public:
 	
 
 private:
+	void GenStage();
 	void DetectCollision(std::shared_ptr<Character> character, std::vector < std::shared_ptr<HitBox>>& attacks);
 	void CleanUp();
 	void CleanUp(std::vector < std::shared_ptr<HitBox>> &attacks);
@@ -58,10 +59,16 @@ private:
 	std::vector<std::shared_ptr<Character>> m_listEnemyCharacter;
 	std::vector < std::shared_ptr<HitBox>> m_listMCAttack;
 	std::vector < std::shared_ptr<HitBox>> m_listEnemyAttack;
+	int m_lv;
+	int m_numEnemies;
 	std::vector<float> m_controlUnitDuration;
 	std::vector<std::string> m_controlUnitCommand;
 
 	//std::unordered_map<std::string, std::shared_ptr<AttackAnimation>> m_mapAttackAnimation;
-	std::shared_ptr<HitBox> Attack(std::shared_ptr<Character> character, int w, int h, int duration);
+	std::shared_ptr<HitBox> Attack(std::shared_ptr<Character> character, int w, int h, int duration, float posibility = 0.0f, std::string ability = "");
+
+	//test
+	//std::shared_ptr<HitBox> m_test;
+	std::unordered_map<std::string, std::shared_ptr<AnimationSprite>> m_mapAttackAnimation;
 };
 

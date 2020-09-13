@@ -41,6 +41,7 @@ public:
 	bool		JumpCauseDamage() { return m_jumpCauseDamage; }
 	void		SetJumpCauseDamage(bool jumpcauseDamage) { m_jumpCauseDamage = jumpcauseDamage; }
 	int			GetMaxHP() { return m_maxHP; }
+	std::string GetCharacterName(){ return m_characterName; }
 
 private:
 	std::shared_ptr<DifferentlyAnimationSprite> m_animations;
@@ -51,5 +52,5 @@ private:
 	float m_jumpDuration;
 	bool m_jumpCauseDamage;
 	bool m_isAttacking;
-
+	std::string m_characterName;
 };

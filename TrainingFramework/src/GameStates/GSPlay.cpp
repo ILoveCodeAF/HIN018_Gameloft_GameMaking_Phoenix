@@ -55,6 +55,7 @@ void GSPlay::Init()
 	cloud->SetSize(screenWidth, screenHeight);
 	m_listBackGround.push_back(cloud);*/
 
+	
 	//Tohsaka Rin
 	auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("sprite_sheet_tohsaka_rin");
@@ -68,21 +69,21 @@ void GSPlay::Init()
 	//m_mainCharacter->Set2DPosition(Vector2(500, 300));
 	//tohsaka_rin->SetSize(75, 112);
 
-	texture = ResourceManagers::GetInstance()->GetTexture("thorny");
-	auto thorny = std::make_shared<Character>(model, shader, texture, 3000, 10); 
-	thorny->loadAnimation("thorny", 0.5f);
-	thorny->SetPositionX(rand() % screenWidth);
-	m_listEnemyCharacter.push_back(thorny);
-	m_controlUnitCommand.push_back("");
-	m_controlUnitDuration.push_back(0.0f);
+	//texture = ResourceManagers::GetInstance()->GetTexture("thorny");
+	//auto thorny = std::make_shared<Character>(model, shader, texture, 3000, 10); 
+	//thorny->loadAnimation("thorny", 0.5f);
+	//thorny->SetPositionX(rand() % screenWidth);
+	//m_listEnemyCharacter.push_back(thorny);
+	//m_controlUnitCommand.push_back("");
+	//m_controlUnitDuration.push_back(0.0f);
 
-	texture = ResourceManagers::GetInstance()->GetTexture("guard");
-	auto guard = std::make_shared<Character>(model, shader, texture, 30000, 10);
-	guard->loadAnimation("guard", 0.25f);
-	guard->SetPositionX(rand() % screenWidth);
-	m_listEnemyCharacter.push_back(guard);
-	m_controlUnitCommand.push_back("");
-	m_controlUnitDuration.push_back(0.0f);
+	//texture = ResourceManagers::GetInstance()->GetTexture("guard");
+	//auto guard = std::make_shared<Character>(model, shader, texture, 30000, 10);
+	//guard->loadAnimation("guard", 0.25f);
+	//guard->SetPositionX(rand() % screenWidth);
+	//m_listEnemyCharacter.push_back(guard);
+	//m_controlUnitCommand.push_back("");
+	//m_controlUnitDuration.push_back(0.0f);
 
 	/*texture = ResourceManagers::GetInstance()->GetTexture("wave_attack");
 	auto wave_attack = std::make_shared<AttackAnimation>(model, shader, texture, 200, Vector2(0, 0), 2);
@@ -101,6 +102,24 @@ void GSPlay::Init()
 	m_score->Set2DPosition(Vector2(5, 25));
 	m_key = 0;
 	m_jumpDuration = 0.0f;
+
+	shader = ResourceManagers::GetInstance()->GetShader("AnimationShader");
+	texture = ResourceManagers::GetInstance()->GetTexture("purple_light_ball");
+	m_mapAttackAnimation["purple_light_ball"] = std::make_shared<AnimationSprite>(model, shader, texture, 1, 10.0f);
+	
+	texture = ResourceManagers::GetInstance()->GetTexture("slash");
+	m_mapAttackAnimation["slash"] = std::make_shared<AnimationSprite>(model, shader, texture, 1, 10.0f);
+
+	///*m_test = std::make_shared<AnimationSprite>(model, shader, texture, 2, 0.3f);
+	//m_test->Set2DPosition(400, 400);
+	//m_test->SetSize(50, 50);*/
+	////auto attack = std::make_shared<HitBox>
+	////attack->loadAnimation("lightning", 2, 0.5f);
+	//m_test = std::make_shared<HitBox>(400, 400, 50, 50, 10, 100.0f);
+	//m_test->loadAnimation("purple_light_ball", 1, 0.5f);
+	m_lv = 1;
+	m_numEnemies = 0;
+	GenStage();
 }
 
 void GSPlay::Exit()
@@ -191,6 +210,10 @@ void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 
 void GSPlay::Update(float deltaTime)
 {
+	if (m_numEnemies <= 0)
+	{
+		GenStage();
+	}
 	/*for (auto bg : m_listBackGround)
 	{
 		bg->Update(deltaTime);
@@ -209,7 +232,6 @@ void GSPlay::Update(float deltaTime)
 	{
 		obj->Update(deltaTime);
 	}
-	DetectCollision();
 	
 	for (auto obj : m_listEnemyAttack)
 	{
@@ -222,6 +244,9 @@ void GSPlay::Update(float deltaTime)
 		if (obj->IsAlive())
 			obj->Update(deltaTime);
 	}
+	//m_test->Update(deltaTime);
+	//m_test->Update(deltaTime);
+	DetectCollision();
 	CleanUp();
 }
 
@@ -248,18 +273,22 @@ void GSPlay::Draw()
 
 	m_mainCharacter->Draw();
 
-	/*for (auto obj : m_listEnemyAttack)
+	for (auto obj : m_listEnemyAttack)
 	{
-		if (obj->Alive())
+		//std::cout << "lol\n";
+		if (obj->IsAlive())
 			obj->Draw();
 	}
 
 	for (auto obj : m_listMCAttack)
 	{
-		if(obj->Alive())
+		if(obj->IsAlive())
 			obj->Draw();
-	}*/
+	}
+	//m_test->Draw();
+	//m_test->Draw();
 }
+
 
 void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaTime, bool isEnemy)
 {
@@ -324,7 +353,7 @@ void GSPlay::Control(std::shared_ptr<Character> character, int key, float deltaT
 		character->SetAnimation(PUNCH);
 		if (character->Attack())
 		{
-			m_listMCAttack.push_back(Attack(character, character->GetWidth() / 2, character->GetHeight(), 1.0f));
+			m_listMCAttack.push_back(Attack(character, character->GetWidth(), character->GetHeight(), 1.0f));
 		}
 	}
 	else if (key & KEY_A && !(key & KEY_D))
@@ -430,7 +459,9 @@ void GSPlay::DetectCollision()
 			DetectCollision(enemy, m_listMCAttack);
 			if (!enemy->Alive())
 			{
+				// main character help self 10% max hp boss
 				m_mainCharacter->GotAttacked(-enemy->GetMaxHP() / 10);
+				m_numEnemies--;
 			}
 		}
 		
@@ -456,14 +487,35 @@ void GSPlay::DetectCollision()
 	}
 }
 
-std::shared_ptr<HitBox> GSPlay::Attack(std::shared_ptr<Character> character, int w, int h, int duration)
+std::shared_ptr<HitBox> GSPlay::Attack(std::shared_ptr<Character> character, int w, int h, int duration, float posibility, std::string ability)
 {
 	int x = character->GetPositionX();
 	int y = character->GetPositionY();
 	if (character->GetDirection() == -1) {
 		x -= w;
 	}
-	return std::make_shared<HitBox>(x, y, w, h, character->GetAttackDamage(), duration);
+
+	//x = rand() % screenWidth;
+	//y = rand() % screenHeight + screenHeight / 8;
+	
+	auto attack = std::make_shared<HitBox>(x, y, w, h, character->GetAttackDamage(), duration);
+	//attack->loadAnimation("lightning", 2, 0.5f);
+	//attack->loadAnimation("purple_light_ball", 1, 0.5f);
+	
+	if ((float)rand() / RAND_MAX < posibility)
+	{
+		duration *= 10;
+		attack->SetDuration(duration);
+		if(m_mapAttackAnimation.find(ability) != m_mapAttackAnimation.end())
+			attack->SetAnimation(m_mapAttackAnimation[ability]);
+		int dx = character->GetDirection() * (rand() % 200 + 100);
+		int dy = rand() % 100 + 10;
+		if (ability == "slash")
+			dy = 0;
+		attack->SetDirection(dx, dy);
+	}
+	return attack;
+	//return std::make_shared<HitBox>(x, y, w, h, character->GetAttackDamage(), duration);
 }
 
 void GSPlay::ControlUnit(float deltaTime)
@@ -521,9 +573,17 @@ void GSPlay::Control(std::shared_ptr<Character> character, std::string command, 
 	{
 		x += velocityX * deltaTime * character->GetDirection();
 		if (x < 0)
+		{
 			x = 0;
+			character->Left(false);
+		}
+
 		if (x > screenWidth)
+		{
 			x = screenWidth;
+			character->Left(true);
+		}
+		
 		if (y > screenHeight * 7 / 8)
 			y = screenHeight * 7 / 8;
 		character->Set2DPosition(x, y);
@@ -532,7 +592,14 @@ void GSPlay::Control(std::shared_ptr<Character> character, std::string command, 
 	{
 		if (character->Attack())
 		{
-			m_listEnemyAttack.push_back(Attack(character, character->GetWidth() / 2, character->GetHeight(), 1.0f));
+			//std::cout << "attack\n";
+			float posibility = 0.33f;
+			std::string ability = "slash";
+			if (character->GetCharacterName() == "thorny")
+			{
+				ability = "purple_light_ball";
+			}
+			m_listEnemyAttack.push_back(Attack(character, character->GetWidth(), character->GetHeight(), 1.0f, posibility, ability));
 		}
 	}	
 	character->Update(deltaTime);
@@ -543,7 +610,7 @@ void GSPlay::CleanUp(std::vector < std::shared_ptr<HitBox>> &attacks)
 	int left = 0, right = attacks.size() - 1;
 	while (left <= right)
 	{
-		if (!attacks[left]->IsAlive())
+		if (! attacks[left]->IsAlive())
 		{
 			if (left < right)
 			{
@@ -558,11 +625,49 @@ void GSPlay::CleanUp(std::vector < std::shared_ptr<HitBox>> &attacks)
 			left++;
 		}
 	}
-	while (right < attacks.size())
+	while (right+1 < attacks.size())
+	{
 		attacks.pop_back();
+	}
 }
 void GSPlay::CleanUp()
 {
 	CleanUp(m_listEnemyAttack);
 	CleanUp(m_listMCAttack);
+}
+
+void GSPlay::GenStage()
+{
+	m_listEnemyCharacter.clear();
+	m_controlUnitCommand.clear();
+	m_controlUnitDuration.clear();
+	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
+	auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
+	auto texture = ResourceManagers::GetInstance()->GetTexture("thorny");
+	
+	int n = rand() % (10 * m_lv);
+	for (int i = 0; i < 1; i++)
+	{
+		auto thorny = std::make_shared<Character>(model, shader, texture, 3000*m_lv, 10*m_lv);
+		thorny->loadAnimation("thorny", 0.5f);
+		thorny->SetPositionX(rand() % screenWidth);
+		m_listEnemyCharacter.push_back(thorny);
+		m_controlUnitCommand.push_back("");
+		m_controlUnitDuration.push_back(0.0f);
+	}
+	
+	texture = ResourceManagers::GetInstance()->GetTexture("guard");
+	n = 10 * m_lv - n;
+	for (int i = 0; i < 1; ++i)
+	{
+		auto guard = std::make_shared<Character>(model, shader, texture, 10000 * m_lv, 50 * m_lv);
+		guard->loadAnimation("guard", 0.25f);
+		guard->SetPositionX(rand() % screenWidth);
+		m_listEnemyCharacter.push_back(guard);
+		m_controlUnitCommand.push_back("");
+		m_controlUnitDuration.push_back(0.0f);
+	}
+	
+	m_numEnemies = m_listEnemyCharacter.size();
+	m_lv++;
 }

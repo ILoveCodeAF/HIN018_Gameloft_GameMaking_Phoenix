@@ -5,7 +5,7 @@ Character::Character()
 }
 
 Character::Character(std::shared_ptr<Models> model, std::shared_ptr<Shaders> shader, std::shared_ptr<Texture> texture, int maxHP, int attackDamage):
-	m_maxHP(maxHP), m_attackDamage(attackDamage), m_currentHP(maxHP)
+	m_maxHP(maxHP), m_attackDamage(attackDamage), m_currentHP(maxHP), m_characterName("")
 {
 	m_animations = std::make_shared<DifferentlyAnimationSprite>(model, shader, texture);
 	m_hpSprite = std::make_shared<HPSprite>(maxHP);
@@ -23,6 +23,7 @@ void Character::Init()
 
 void Character::loadAnimation(std::string path, float scale)
 {
+	m_characterName = path;
 	m_animations->loadAnimation(path, scale);
 }
 
