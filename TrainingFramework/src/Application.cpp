@@ -12,11 +12,22 @@ Application::Application()
 
 Application::~Application()
 {
+	soloud.deinit();
+}
+
+void Application::Play(std::string songName)
+{
+	songName = "src/music/" + songName;
+	sample.load(songName.c_str()); // Load a wave file
+	sample.setLooping(true);
+	soloud.play(sample);        // Play it
 }
 
 
 void Application::Init()
 {
+	// Initialize SoLoud (automatic back-end selection)
+	soloud.init();
 	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	GameStateMachine::GetInstance()->PushState(StateTypes::STATE_Intro);
 }

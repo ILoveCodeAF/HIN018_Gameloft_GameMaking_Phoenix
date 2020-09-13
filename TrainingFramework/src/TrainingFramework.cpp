@@ -42,7 +42,6 @@ void CleanUp()
 
 GLint _tmain(GLint argc, _TCHAR* argv[])
 {
-
 	ESContext esContext;
 	esInitContext(&esContext);
 	esCreateWindow(&esContext, "HieuLC Game", screenWidth, screenHeight, ES_WINDOW_RGB | ES_WINDOW_DEPTH);
@@ -59,7 +58,7 @@ GLint _tmain(GLint argc, _TCHAR* argv[])
 	CleanUp();
 
 	//identifying memory leaks
-	MemoryDump();
+	//MemoryDump();
 	//printf("Press any key...\n");
 	//_getch();
 

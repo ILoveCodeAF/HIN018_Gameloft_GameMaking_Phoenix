@@ -10,6 +10,7 @@
 #include "Text.h"
 #include <stdlib.h>
 #include <time.h>
+#include "Application.h"
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -33,6 +34,7 @@ GSPlay::~GSPlay()
 
 void GSPlay::Init()
 {
+	Application::GetInstance()->Play("Kingdom_Come.wav");
 	srand(time(NULL));
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	//auto texture = ResourceManagers::GetInstance()->GetTexture("bg_play");
@@ -678,8 +680,8 @@ void GSPlay::GenStage()
 	auto shader = ResourceManagers::GetInstance()->GetShader("DifferentlyAnimationShader");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("thorny");
 	
-	int n = rand() % (10 * m_lv);
-	for (int i = 0; i < 1; i++)
+	int n = rand() % (5*m_lv);
+	for (int i = 0; i < n; i++)
 	{
 		auto thorny = std::make_shared<Character>(model, shader, texture, 3000*m_lv, 10*m_lv);
 		thorny->loadAnimation("thorny", 0.5f);
@@ -690,8 +692,8 @@ void GSPlay::GenStage()
 	}
 	
 	texture = ResourceManagers::GetInstance()->GetTexture("guard");
-	n = 10 * m_lv - n;
-	for (int i = 0; i < 1; ++i)
+	n = 5 * m_lv - n;
+	for (int i = 0; i < n; ++i)
 	{
 		auto guard = std::make_shared<Character>(model, shader, texture, 10000 * m_lv, 50 * m_lv);
 		guard->loadAnimation("guard", 0.25f);

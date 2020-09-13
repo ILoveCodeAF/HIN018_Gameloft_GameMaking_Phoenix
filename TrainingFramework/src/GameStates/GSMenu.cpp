@@ -1,4 +1,5 @@
 #include "GSMenu.h"
+#include "Application.h"
 
 extern int screenWidth; //need get on Graphic engine
 extern int screenHeight; //need get on Graphic engine
@@ -17,6 +18,8 @@ GSMenu::~GSMenu()
 
 void GSMenu::Init()
 {
+	Application::GetInstance()->Play("Reminiscence.wav");
+
 	auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D");
 	auto texture = ResourceManagers::GetInstance()->GetTexture("bg_main_menu");
 
