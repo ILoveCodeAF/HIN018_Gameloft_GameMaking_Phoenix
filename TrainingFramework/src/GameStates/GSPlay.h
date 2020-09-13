@@ -6,6 +6,7 @@
 #include "Character.h"
 #include "StageMap.h"
 #include "HitBox.h"
+#include "GameButton.h"
 
 
 class Sprite2D;
@@ -70,5 +71,6 @@ private:
 	//test
 	//std::shared_ptr<HitBox> m_test;
 	std::unordered_map<std::string, std::shared_ptr<AnimationSprite>> m_mapAttackAnimation;
+	std::list<std::shared_ptr<GameButton>>	m_listButton;
 };
 

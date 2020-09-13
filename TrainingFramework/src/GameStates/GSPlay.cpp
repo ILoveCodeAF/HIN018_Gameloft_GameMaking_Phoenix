@@ -120,6 +120,16 @@ void GSPlay::Init()
 	m_lv = 1;
 	m_numEnemies = 0;
 	GenStage();
+
+	shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+	texture = ResourceManagers::GetInstance()->GetTexture("btn_ok");
+	std::shared_ptr<GameButton> button = std::make_shared<GameButton>(model, shader, texture);
+	button->Set2DPosition(screenWidth / 2, screenHeight - 55);
+	button->SetSize(100, 50);
+	button->SetOnClick([]() {
+		GameStateMachine::GetInstance()->PopState();
+		});
+	m_listButton.push_back(button);
 }
 
 void GSPlay::Exit()
@@ -206,6 +216,14 @@ void GSPlay::HandleKeyEvents(int key, bool bIsPressed)
 
 void GSPlay::HandleTouchEvents(int x, int y, bool bIsPressed)
 {
+	if (!m_mainCharacter->Alive())
+	{
+		for (auto it : m_listButton)
+		{
+			(it)->HandleTouchEvents(x, y, bIsPressed);
+			if ((it)->IsHandle()) break;
+		}
+	}
 }
 
 void GSPlay::Update(float deltaTime)
@@ -248,6 +266,14 @@ void GSPlay::Update(float deltaTime)
 	//m_test->Update(deltaTime);
 	DetectCollision();
 	CleanUp();
+
+	if (!m_mainCharacter->Alive())
+	{
+		for (auto it : m_listButton)
+		{
+			it->Update(deltaTime);
+		}
+	}
 }
 
 void GSPlay::Draw()
@@ -287,6 +313,13 @@ void GSPlay::Draw()
 	}
 	//m_test->Draw();
 	//m_test->Draw();
+	if (!m_mainCharacter->Alive())
+	{
+		for (auto it : m_listButton)
+		{
+			it->Draw();
+		}
+	}
 }
 
 

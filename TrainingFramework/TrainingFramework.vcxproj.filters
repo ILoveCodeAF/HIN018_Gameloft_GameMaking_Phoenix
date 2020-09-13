@@ -99,6 +99,9 @@
     <ClCompile Include="src\GameObject\HitBox.cpp">
       <Filter>TrainingFramework\src\GameObject</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameStates\GSHelp.cpp">
+      <Filter>TrainingFramework\src\GameStates</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -187,6 +190,9 @@
     </ClInclude>
     <ClInclude Include="src\GameObject\HitBox.h">
       <Filter>TrainingFramework\src\GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameStates\GSHelp.h">
+      <Filter>TrainingFramework\src\GameStates</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
